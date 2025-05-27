@@ -98,6 +98,8 @@ namespace OGRALAB
             services.AddTransient<SearchEditViewModel>();
             services.AddTransient<ResultEntryControlViewModel>();
             services.AddTransient<TestTypesManagementViewModel>();
+            services.AddTransient<ReportViewViewModel>();
+            services.AddTransient<TestGroupsManagementViewModel>();
         }
 
         protected override void OnExit(ExitEventArgs e)

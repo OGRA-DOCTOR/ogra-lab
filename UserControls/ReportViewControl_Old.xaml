@@ -1,0 +1,194 @@
+<UserControl x:Class="OGRALAB.UserControls.ReportViewControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             FlowDirection="RightToLeft"
+             FontFamily="Cairo, Segoe UI">
+    
+    <UserControl.Resources>
+        <!-- Color Resources -->
+        <SolidColorBrush x:Key="PrimaryDark" Color="#1e3a8a"/>
+        <SolidColorBrush x:Key="AccentOrange" Color="#f59e0b"/>
+        <SolidColorBrush x:Key="AccentGreen" Color="#10b981"/>
+        <SolidColorBrush x:Key="LightGray" Color="#f8fafc"/>
+        <SolidColorBrush x:Key="DarkText" Color="#1e293b"/>
+    </UserControl.Resources>
+    
+    <Grid Background="{StaticResource LightGray}">
+        <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="20">
+            <StackPanel>
+                <!-- Header -->
+                <Border Background="{StaticResource PrimaryDark}" CornerRadius="8" Padding="20" Margin="0,0,0,20">
+                    <StackPanel Orientation="Horizontal">
+                        <Ellipse Width="50" Height="50" Fill="{StaticResource AccentOrange}" Margin="0,0,15,0"/>
+                        <StackPanel>
+                            <TextBlock Text="معاينة وطباعة النتائج" FontSize="24" FontWeight="Bold" Foreground="White"/>
+                            <TextBlock Text="عرض وطباعة تقارير التحاليل الطبية" FontSize="14" Foreground="#cbd5e1"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- Report Types -->
+                <Grid Margin="0,0,0,20">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <Border Grid.Column="0" Background="{StaticResource AccentGreen}" 
+                           CornerRadius="8" Padding="20" Margin="5">
+                        <StackPanel HorizontalAlignment="Center" Cursor="Hand">
+                            <TextBlock Text="📊" FontSize="40" HorizontalAlignment="Center" Foreground="White"/>
+                            <TextBlock Text="تقرير شامل" FontSize="16" FontWeight="SemiBold" 
+                                     HorizontalAlignment="Center" Foreground="White"/>
+                        </StackPanel>
+                    </Border>
+                    
+                    <Border Grid.Column="1" Background="{StaticResource AccentOrange}" 
+                           CornerRadius="8" Padding="20" Margin="5">
+                        <StackPanel HorizontalAlignment="Center" Cursor="Hand">
+                            <TextBlock Text="🖨️" FontSize="40" HorizontalAlignment="Center" Foreground="White"/>
+                            <TextBlock Text="طباعة سريعة" FontSize="16" FontWeight="SemiBold" 
+                                     HorizontalAlignment="Center" Foreground="White"/>
+                        </StackPanel>
+                    </Border>
+                    
+                    <Border Grid.Column="2" Background="{StaticResource PrimaryDark}" 
+                           CornerRadius="8" Padding="20" Margin="5">
+                        <StackPanel HorizontalAlignment="Center" Cursor="Hand">
+                            <TextBlock Text="📄" FontSize="40" HorizontalAlignment="Center" Foreground="White"/>
+                            <TextBlock Text="تصدير PDF" FontSize="16" FontWeight="SemiBold" 
+                                     HorizontalAlignment="Center" Foreground="White"/>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+
+                <!-- Search and Filter -->
+                <Border Background="White" CornerRadius="8" Padding="20" Margin="0,0,0,20">
+                    <Border.Effect>
+                        <DropShadowEffect Color="Black" Opacity="0.1" ShadowDepth="2" BlurRadius="8"/>
+                    </Border.Effect>
+                    
+                    <StackPanel>
+                        <TextBlock Text="البحث والتصفية" FontSize="18" FontWeight="Bold" 
+                                 Foreground="{StaticResource DarkText}" Margin="0,0,0,15"/>
+                        
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="2*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            
+                            <!-- Patient Search -->
+                            <StackPanel Grid.Column="0" Margin="0,0,10,0">
+                                <TextBlock Text="البحث عن مريض" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                                <TextBox FontSize="14" Padding="10" BorderThickness="2" BorderBrush="#e2e8f0"
+                                       Text="ادخل اسم المريض أو رقم الهوية"/>
+                            </StackPanel>
+                            
+                            <!-- Date From -->
+                            <StackPanel Grid.Column="1" Margin="5,0">
+                                <TextBlock Text="من تاريخ" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                                <DatePicker FontSize="14" Padding="8" BorderThickness="2" BorderBrush="#e2e8f0"/>
+                            </StackPanel>
+                            
+                            <!-- Date To -->
+                            <StackPanel Grid.Column="2" Margin="5,0">
+                                <TextBlock Text="إلى تاريخ" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                                <DatePicker FontSize="14" Padding="8" BorderThickness="2" BorderBrush="#e2e8f0"/>
+                            </StackPanel>
+                            
+                            <!-- Search Button -->
+                            <Button Grid.Column="3" 
+                                   Content="🔍 بحث" 
+                                   Background="{StaticResource AccentGreen}"
+                                   Foreground="White"
+                                   BorderThickness="0"
+                                   Padding="15,20"
+                                   Margin="10,25,0,0"
+                                   FontSize="14"
+                                   FontWeight="SemiBold"
+                                   Cursor="Hand"/>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!-- Reports List -->
+                <Border Background="White" CornerRadius="8" Padding="20">
+                    <Border.Effect>
+                        <DropShadowEffect Color="Black" Opacity="0.1" ShadowDepth="2" BlurRadius="8"/>
+                    </Border.Effect>
+                    
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,15">
+                            <TextBlock Text="قائمة التقارير" FontSize="18" FontWeight="Bold" 
+                                     Foreground="{StaticResource DarkText}"/>
+                            <Border Background="{StaticResource AccentOrange}" CornerRadius="12" 
+                                   Padding="8,4" Margin="15,0,0,0">
+                                <TextBlock Text="0 تقرير" FontSize="12" FontWeight="SemiBold" Foreground="White"/>
+                            </Border>
+                        </StackPanel>
+                        
+                        <!-- Placeholder for reports -->
+                        <Border Background="#f8f9fa" CornerRadius="6" Padding="40" MinHeight="300">
+                            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <TextBlock Text="📄" FontSize="64" HorizontalAlignment="Center" Margin="0,0,0,15"/>
+                                <TextBlock Text="لا توجد تقارير متاحة" FontSize="18" FontWeight="SemiBold"
+                                         HorizontalAlignment="Center" Foreground="#6c757d" Margin="0,0,0,5"/>
+                                <TextBlock Text="ابدأ بالبحث أو أضف تحاليل جديدة لعرض التقارير" FontSize="14"
+                                         HorizontalAlignment="Center" Foreground="#6c757d"/>
+                            </StackPanel>
+                        </Border>
+                        
+                        <!-- Action Buttons -->
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20,0,0">
+                            <Button Content="📊 تقرير شامل" 
+                                   Background="{StaticResource AccentGreen}"
+                                   Foreground="White"
+                                   BorderThickness="0"
+                                   Padding="15,8"
+                                   Margin="5"
+                                   FontSize="14"
+                                   FontWeight="SemiBold"
+                                   Cursor="Hand"/>
+                            
+                            <Button Content="🖨️ طباعة" 
+                                   Background="{StaticResource AccentOrange}"
+                                   Foreground="White"
+                                   BorderThickness="0"
+                                   Padding="15,8"
+                                   Margin="5"
+                                   FontSize="14"
+                                   FontWeight="SemiBold"
+                                   Cursor="Hand"/>
+                            
+                            <Button Content="📄 تصدير PDF" 
+                                   Background="{StaticResource PrimaryDark}"
+                                   Foreground="White"
+                                   BorderThickness="0"
+                                   Padding="15,8"
+                                   Margin="5"
+                                   FontSize="14"
+                                   FontWeight="SemiBold"
+                                   Cursor="Hand"/>
+                        </StackPanel>
+                        
+                        <!-- Coming Soon Message -->
+                        <Border Background="#e7f3ff" CornerRadius="6" Padding="15" Margin="0,20,0,0">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="💡" FontSize="20" Margin="0,0,10,0"/>
+                                <StackPanel>
+                                    <TextBlock Text="قيد التطوير" FontWeight="Bold" Foreground="#004085"/>
+                                    <TextBlock Text="سيتم تنفيذ وظائف معاينة وطباعة التقارير الكاملة في التحديث القادم" 
+                                             FontSize="12" Foreground="#004085"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

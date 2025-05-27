@@ -539,5 +539,99 @@ namespace OGRALAB.Services
                 .Where(pt => pt.Status == status)
                 .CountAsync();
         }
+
+        // Test Groups and Test Types Relationship Management
+        public async Task<IEnumerable<TestType>> GetTestTypesByGroupIdAsync(int testGroupId)
+        {
+            var testGroup = await _context.TestGroups
+                .Include(tg => tg.TestTypes)
+                .FirstOrDefaultAsync(tg => tg.TestGroupId == testGroupId);
+
+            return testGroup?.TestTypes ?? new List<TestType>();
+        }
+
+        public async Task<bool> AddTestTypeToGroupAsync(int testGroupId, int testTypeId)
+        {
+            try
+            {
+                var testGroup = await _context.TestGroups
+                    .Include(tg => tg.TestTypes)
+                    .FirstOrDefaultAsync(tg => tg.TestGroupId == testGroupId);
+
+                var testType = await _context.TestTypes
+                    .FirstOrDefaultAsync(tt => tt.TestTypeId == testTypeId);
+
+                if (testGroup == null || testType == null) return false;
+
+                // Check if already exists
+                if (testGroup.TestTypes.Any(tt => tt.TestTypeId == testTypeId))
+                    return true; // Already exists
+
+                testGroup.TestTypes.Add(testType);
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> RemoveTestTypeFromGroupAsync(int testGroupId, int testTypeId)
+        {
+            try
+            {
+                var testGroup = await _context.TestGroups
+                    .Include(tg => tg.TestTypes)
+                    .FirstOrDefaultAsync(tg => tg.TestGroupId == testGroupId);
+
+                if (testGroup == null) return false;
+
+                var testType = testGroup.TestTypes.FirstOrDefault(tt => tt.TestTypeId == testTypeId);
+                if (testType == null) return true; // Already removed
+
+                testGroup.TestTypes.Remove(testType);
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> UpdateTestGroupTestTypesAsync(int testGroupId, List<int> testTypeIds)
+        {
+            try
+            {
+                var testGroup = await _context.TestGroups
+                    .Include(tg => tg.TestTypes)
+                    .FirstOrDefaultAsync(tg => tg.TestGroupId == testGroupId);
+
+                if (testGroup == null) return false;
+
+                // Clear existing test types
+                testGroup.TestTypes.Clear();
+
+                // Add new test types
+                foreach (var testTypeId in testTypeIds)
+                {
+                    var testType = await _context.TestTypes
+                        .FirstOrDefaultAsync(tt => tt.TestTypeId == testTypeId);
+                    
+                    if (testType != null)
+                    {
+                        testGroup.TestTypes.Add(testType);
+                    }
+                }
+
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
     }
 }

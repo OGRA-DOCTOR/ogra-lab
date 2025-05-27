@@ -24,6 +24,10 @@ namespace OGRALAB.Services
         Task<TestGroup> CreateTestGroupAsync(TestGroup testGroup);
         Task<TestGroup> UpdateTestGroupAsync(TestGroup testGroup);
         Task<bool> DeleteTestGroupAsync(int testGroupId);
+        Task<IEnumerable<TestType>> GetTestTypesByGroupIdAsync(int testGroupId);
+        Task<bool> AddTestTypeToGroupAsync(int testGroupId, int testTypeId);
+        Task<bool> RemoveTestTypeFromGroupAsync(int testGroupId, int testTypeId);
+        Task<bool> UpdateTestGroupTestTypesAsync(int testGroupId, List<int> testTypeIds);
 
         // Patient Tests Management
         Task<IEnumerable<PatientTest>> GetAllPatientTestsAsync();
@@ -40,6 +44,7 @@ namespace OGRALAB.Services
 
         // Test Results Management
         Task<IEnumerable<TestResult>> GetAllTestResultsAsync();
+    Task<IEnumerable<TestResult>> GetTestResultsByPatientTestIdAsync(int patientTestId);
         Task<IEnumerable<TestResult>> GetTestResultsByPatientTestIdAsync(int patientTestId);
         Task<TestResult?> GetTestResultByIdAsync(int testResultId);
         Task<TestResult> CreateTestResultAsync(TestResult testResult);
