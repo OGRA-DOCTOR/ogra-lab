@@ -7,7 +7,9 @@ namespace OGRALAB.Views
 {
     public partial class MainWindow : Window
     {
-        private DispatcherTimer? _timer;
+        private readonly DispatcherTimer _clockTimer;
+        private readonly DispatcherTimer _statusTimer;
+
         public MainViewModel ViewModel { get; }
 
         public MainWindow()
@@ -15,59 +17,63 @@ namespace OGRALAB.Views
             InitializeComponent();
             ViewModel = App.GetService<MainViewModel>();
             DataContext = ViewModel;
-            InitializeWindow();
-        }
 
-        private void InitializeWindow()
-        {
-            // Set current date
-            CurrentDateLabel.Text = $"التاريخ: {DateTime.Now.ToString("dd/MM/yyyy")}";
-            
-            // Initialize timer for status bar
-            _timer = new DispatcherTimer();
-            _timer.Interval = TimeSpan.FromSeconds(1);
-            _timer.Tick += Timer_Tick;
-            _timer.Start();
-            
+            // Initialize timers
+            _clockTimer = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromSeconds(1)
+            };
+            _clockTimer.Tick += ClockTimer_Tick;
+            _clockTimer.Start();
+
+            _statusTimer = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromSeconds(1)
+            };
+            _statusTimer.Tick += StatusTimer_Tick;
+            _statusTimer.Start();
+
+            // Set initial time
+            UpdateClock();
+            UpdateStatusTime();
+
             // Set initial status
-            StatusLabel.Text = "جاهز";
-            DatabaseStatusLabel.Text = "متصل بقاعدة البيانات";
-            
-            LoadDashboardData();
+            ViewModel.StatusMessage = "جاهز";
+            ViewModel.DatabaseStatus = "متصل";
+
+            Loaded += MainWindow_Loaded;
         }
 
-        private void Timer_Tick(object? sender, EventArgs e)
+        private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            TimeLabel.Text = DateTime.Now.ToString("HH:mm:ss");
+            // Load initial data
+            ViewModel.LoadDataCommand?.Execute(null);
         }
 
-        private void LoadDashboardData()
+        private void ClockTimer_Tick(object? sender, EventArgs e)
         {
-            try
-            {
-                // Data is now loaded through ViewModel
-                StatusLabel.Text = "تم تحميل البيانات بنجاح";
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"خطأ في تحميل البيانات: {ex.Message}", "خطأ", MessageBoxButton.OK, MessageBoxImage.Error);
-                StatusLabel.Text = "خطأ في تحميل البيانات";
-            }
+            UpdateClock();
         }
 
-        private void ExitMenuItem_Click(object sender, RoutedEventArgs e)
+        private void StatusTimer_Tick(object? sender, EventArgs e)
         {
-            var result = MessageBox.Show("هل تريد الخروج من البرنامج؟", "تأكيد الخروج", 
-                                       MessageBoxButton.YesNo, MessageBoxImage.Question);
-            if (result == MessageBoxResult.Yes)
-            {
-                Application.Current.Shutdown();
-            }
+            UpdateStatusTime();
+        }
+
+        private void UpdateClock()
+        {
+            ClockLabel.Text = DateTime.Now.ToString("HH:mm:ss");
+        }
+
+        private void UpdateStatusTime()
+        {
+            StatusTimeLabel.Text = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss");
         }
 
         protected override void OnClosed(EventArgs e)
         {
-            _timer?.Stop();
+            _clockTimer?.Stop();
+            _statusTimer?.Stop();
             base.OnClosed(e);
         }
     }

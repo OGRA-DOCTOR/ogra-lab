@@ -2,10 +2,13 @@ using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 using System.Windows.Input;
 using OGRALAB.Services;
 using OGRALAB.Models;
 using OGRALAB.Views;
+using OGRALAB.Helpers;
+using OGRALAB.UserControls;
 using System.Windows;
 
 namespace OGRALAB.ViewModels
@@ -20,6 +23,10 @@ namespace OGRALAB.ViewModels
         private int _activeTestsCount;
         private int _pendingTestsCount;
         private int _completedTodayCount;
+        private string _currentSection = string.Empty;
+        private UserControl? _currentSectionContent;
+        private string _statusMessage = "جاهز";
+        private string _databaseStatus = "متصل";
 
         public MainViewModel(
             IAuthenticationService authenticationService,
@@ -36,6 +43,8 @@ namespace OGRALAB.ViewModels
             AddPatientCommand = new RelayCommand(AddPatient, CanAddPatient);
             SearchPatientCommand = new RelayCommand(SearchPatient, CanSearchPatient);
             ManageUsersCommand = new RelayCommand(ManageUsers, CanManageUsers);
+            NavigateCommand = new RelayCommand<string>(Navigate);
+            LoadDataCommand = new RelayCommand(async () => await LoadDataAsync());
 
             LoadData();
         }
@@ -84,17 +93,49 @@ namespace OGRALAB.ViewModels
             set => SetProperty(ref _completedTodayCount, value);
         }
 
+        public string CurrentSection
+        {
+            get => _currentSection;
+            set => SetProperty(ref _currentSection, value);
+        }
+
+        public UserControl? CurrentSectionContent
+        {
+            get => _currentSectionContent;
+            set => SetProperty(ref _currentSectionContent, value);
+        }
+
+        public string StatusMessage
+        {
+            get => _statusMessage;
+            set => SetProperty(ref _statusMessage, value);
+        }
+
+        public string DatabaseStatus
+        {
+            get => _databaseStatus;
+            set => SetProperty(ref _databaseStatus, value);
+        }
+
         // Commands
         public ICommand LogoutCommand { get; }
         public ICommand ShowLoginLogsCommand { get; }
         public ICommand AddPatientCommand { get; }
         public ICommand SearchPatientCommand { get; }
         public ICommand ManageUsersCommand { get; }
+        public ICommand NavigateCommand { get; }
+        public ICommand LoadDataCommand { get; }
 
         private async void LoadData()
         {
+            await LoadDataAsync();
+        }
+
+        private async Task LoadDataAsync()
+        {
             try
             {
+                StatusMessage = "جاري تحميل البيانات...";
                 CurrentUser = _authenticationService.CurrentUser;
                 
                 // Load dashboard statistics
@@ -113,9 +154,12 @@ namespace OGRALAB.ViewModels
                 OnPropertyChanged(nameof(CanManageTests));
                 OnPropertyChanged(nameof(CurrentUserDisplayName));
                 OnPropertyChanged(nameof(CurrentUserRole));
+                
+                StatusMessage = "جاهز";
             }
             catch (Exception ex)
             {
+                StatusMessage = "خطأ في تحميل البيانات";
                 MessageBox.Show($"خطأ في تحميل البيانات: {ex.Message}", "خطأ", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
@@ -191,13 +235,85 @@ namespace OGRALAB.ViewModels
 
         private void ManageUsers()
         {
-            // TODO: Implement user management window
-            MessageBox.Show("سيتم تنفيذ هذه الوظيفة في المرحلة التالية", "قيد التطوير", MessageBoxButton.OK, MessageBoxImage.Information);
+            try
+            {
+                var userManagementWindow = new UserManagementWindow();
+                userManagementWindow.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"خطأ في فتح نافذة إدارة المستخدمين: {ex.Message}", "خطأ", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private bool CanManageUsers()
         {
             return CanViewUserManagement;
+        }
+
+        private void Navigate(string section)
+        {
+            try
+            {
+                StatusMessage = $"التنقل إلى {GetSectionDisplayName(section)}...";
+                CurrentSection = section;
+                
+                // Clear current content
+                CurrentSectionContent = null;
+                
+                // Create appropriate UserControl based on section
+                switch (section?.ToLower())
+                {
+                    case "patientmanagement":
+                        CurrentSectionContent = new PatientManagementControl();
+                        StatusMessage = $"تم التنقل إلى {GetSectionDisplayName(section)}";
+                        break;
+                        
+                    case "searchedit":
+                        CurrentSectionContent = new SearchEditControl();
+                        StatusMessage = $"تم التنقل إلى {GetSectionDisplayName(section)}";
+                        break;
+                        
+                    case "resultentry":
+                        CurrentSectionContent = new ResultEntryControl();
+                        StatusMessage = $"تم التنقل إلى {GetSectionDisplayName(section)}";
+                        break;
+                        
+                    case "reportview":
+                        CurrentSectionContent = new ReportViewControl();
+                        StatusMessage = $"تم التنقل إلى {GetSectionDisplayName(section)}";
+                        break;
+                        
+                    case "settings":
+                        CurrentSectionContent = new SettingsControl();
+                        StatusMessage = $"تم التنقل إلى {GetSectionDisplayName(section)}";
+                        break;
+                        
+                    default:
+                        CurrentSection = string.Empty;
+                        CurrentSectionContent = null;
+                        StatusMessage = "جاهز";
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = "خطأ في التنقل";
+                MessageBox.Show($"خطأ في التنقل: {ex.Message}", "خطأ", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private string GetSectionDisplayName(string section)
+        {
+            return section?.ToLower() switch
+            {
+                "patientmanagement" => "إدارة المرضى",
+                "searchedit" => "البحث والتعديل",
+                "resultentry" => "إدخال النتائج",
+                "reportview" => "معاينة التقارير",
+                "settings" => "الإعدادات",
+                _ => "الصفحة الرئيسية"
+            };
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;

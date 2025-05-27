@@ -200,35 +200,15 @@
                                  Margin="10,0,0,8"/>
                         
                         <Button Content="📋 إدارة المرضى" 
+                               Style="{StaticResource NavigationButton}"
                                Command="{Binding NavigateCommand}"
                                CommandParameter="PatientManagement"
-                               Visibility="{Binding CanAddPatients, Converter={StaticResource BoolToVisibilityConverter}}">
-                            <Button.Style>
-                                <Style TargetType="Button" BasedOn="{StaticResource NavigationButton}">
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding CurrentSection}" Value="PatientManagement">
-                                            <Setter Property="Background" Value="{StaticResource AccentGreen}"/>
-                                            <Setter Property="FontWeight" Value="Bold"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Button.Style>
-                        </Button>
+                               Visibility="{Binding CanAddPatients, Converter={StaticResource BoolToVisibilityConverter}}"/>
                         
                         <Button Content="🔍 بحث وتعديل" 
+                               Style="{StaticResource NavigationButton}"
                                Command="{Binding NavigateCommand}"
-                               CommandParameter="SearchEdit">
-                            <Button.Style>
-                                <Style TargetType="Button" BasedOn="{StaticResource NavigationButton}">
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding CurrentSection}" Value="SearchEdit">
-                                            <Setter Property="Background" Value="{StaticResource AccentGreen}"/>
-                                            <Setter Property="FontWeight" Value="Bold"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Button.Style>
-                        </Button>
+                               CommandParameter="SearchEdit"/>
                         
                         <!-- Test Management Section -->
                         <TextBlock Text="إدارة التحاليل" 
@@ -237,59 +217,29 @@
                                  Margin="10,20,0,8"/>
                         
                         <Button Content="🧪 إدخال النتائج" 
+                               Style="{StaticResource NavigationButton}"
                                Command="{Binding NavigateCommand}"
                                CommandParameter="ResultEntry"
-                               Visibility="{Binding CanManageTests, Converter={StaticResource BoolToVisibilityConverter}}">
-                            <Button.Style>
-                                <Style TargetType="Button" BasedOn="{StaticResource NavigationButton}">
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding CurrentSection}" Value="ResultEntry">
-                                            <Setter Property="Background" Value="{StaticResource AccentGreen}"/>
-                                            <Setter Property="FontWeight" Value="Bold"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Button.Style>
-                        </Button>
+                               Visibility="{Binding CanManageTests, Converter={StaticResource BoolToVisibilityConverter}}"/>
                         
                         <Button Content="📊 معاينة وطباعة النتائج" 
+                               Style="{StaticResource NavigationButton}"
                                Command="{Binding NavigateCommand}"
                                CommandParameter="ReportView"
-                               Visibility="{Binding CanManageTests, Converter={StaticResource BoolToVisibilityConverter}}">
-                            <Button.Style>
-                                <Style TargetType="Button" BasedOn="{StaticResource NavigationButton}">
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding CurrentSection}" Value="ReportView">
-                                            <Setter Property="Background" Value="{StaticResource AccentGreen}"/>
-                                            <Setter Property="FontWeight" Value="Bold"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Button.Style>
-                        </Button>
+                               Visibility="{Binding CanManageTests, Converter={StaticResource BoolToVisibilityConverter}}"/>
                         
                         <!-- System Management Section -->
                         <TextBlock Text="إدارة النظام" 
                                  FontSize="14" FontWeight="SemiBold" 
                                  Foreground="{StaticResource AccentOrange}" 
                                  Margin="10,20,0,8"
-                                 Visibility="{Binding CanViewReports, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                 Visibility="{Binding CanViewUserManagement, Converter={StaticResource BoolToVisibilityConverter}}"/>
                         
                         <Button Content="⚙️ الإعدادات" 
+                               Style="{StaticResource NavigationButton}"
                                Command="{Binding NavigateCommand}"
                                CommandParameter="Settings"
-                               Visibility="{Binding CanViewReports, Converter={StaticResource BoolToVisibilityConverter}}">
-                            <Button.Style>
-                                <Style TargetType="Button" BasedOn="{StaticResource NavigationButton}">
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding CurrentSection}" Value="Settings">
-                                            <Setter Property="Background" Value="{StaticResource AccentGreen}"/>
-                                            <Setter Property="FontWeight" Value="Bold"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Button.Style>
-                        </Button>
+                               Visibility="{Binding CanViewReports, Converter={StaticResource BoolToVisibilityConverter}}"/>
                         
                         <!-- Statistics Section -->
                         <Border Background="#2563eb" 
@@ -332,163 +282,145 @@
                 </ScrollViewer>
             </Border>
             
-            <!-- Main Content Panel -->
-            <Border Grid.Column="1" Background="{StaticResource CardBackground}" 
-                   CornerRadius="8" Margin="15">
-                <Border.Effect>
-                    <DropShadowEffect Color="Black" Opacity="0.1" ShadowDepth="2" BlurRadius="8"/>
-                </Border.Effect>
+            <!-- Main Content -->
+            <Grid Grid.Column="1" Margin="20">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
                 
-                <Grid>
-                    <!-- Content Host -->
-                    <ContentPresenter Name="MainContentPresenter" 
-                                    Content="{Binding CurrentSectionContent}"/>
+                <!-- Welcome Header -->
+                <StackPanel Grid.Row="0" Margin="0,0,0,20">
+                    <TextBlock Text="مرحباً بك في نظام OGRA LAB" FontSize="24" FontWeight="Bold" Margin="0,0,0,10"/>
+                    <TextBlock Text="نظام شامل لإدارة المختبرات الطبية" FontSize="16" Foreground="Gray"/>
+                    <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                        <TextBlock Text="المستخدم الحالي: " FontSize="14" Foreground="Gray"/>
+                        <TextBlock Text="{Binding CurrentUserDisplayName}" FontSize="14" FontWeight="Bold"/>
+                        <TextBlock Text=" (" FontSize="14" Foreground="Gray"/>
+                        <TextBlock Text="{Binding CurrentUserRole}" FontSize="14" Foreground="Gray"/>
+                        <TextBlock Text=")" FontSize="14" Foreground="Gray"/>
+                    </StackPanel>
+                    <TextBlock Name="CurrentDateLabel" FontSize="14" Foreground="Gray"/>
+                </StackPanel>
+                
+                <!-- Dashboard Content -->
+                <TabControl Grid.Row="1" Name="MainTabControl">
+                    <TabItem Header="لوحة التحكم">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            
+                            <!-- Quick Stats -->
+                            <Grid Grid.Row="0" Margin="0,0,0,20">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                
+                                <Border Grid.Column="0" Background="{StaticResource InfoColor}" Margin="5" Padding="15" CornerRadius="5">
+                                    <StackPanel>
+                                        <TextBlock Text="إجمالي المرضى" Foreground="White" FontWeight="Bold"/>
+                                        <TextBlock Text="{Binding TotalPatientsCount}" Foreground="White" FontSize="18" FontWeight="Bold"/>
+                                    </StackPanel>
+                                </Border>
+                                
+                                <Border Grid.Column="1" Background="{StaticResource SecondaryColor}" Margin="5" Padding="15" CornerRadius="5">
+                                    <StackPanel>
+                                        <TextBlock Text="التحاليل النشطة" Foreground="White" FontWeight="Bold"/>
+                                        <TextBlock Text="{Binding ActiveTestsCount}" Foreground="White" FontSize="18" FontWeight="Bold"/>
+                                    </StackPanel>
+                                </Border>
+                                
+                                <Border Grid.Column="2" Background="{StaticResource WarningColor}" Margin="5" Padding="15" CornerRadius="5">
+                                    <StackPanel>
+                                        <TextBlock Text="في الانتظار" Foreground="White" FontWeight="Bold"/>
+                                        <TextBlock Text="{Binding PendingTestsCount}" Foreground="White" FontSize="18" FontWeight="Bold"/>
+                                    </StackPanel>
+                                </Border>
+                                
+                                <Border Grid.Column="3" Background="{StaticResource PrimaryColor}" Margin="5" Padding="15" CornerRadius="5">
+                                    <StackPanel>
+                                        <TextBlock Text="مكتملة اليوم" Foreground="White" FontWeight="Bold"/>
+                                        <TextBlock Text="{Binding CompletedTodayCount}" Foreground="White" FontSize="18" FontWeight="Bold"/>
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
+                            
+                            <!-- Recent Activities -->
+                            <Grid Grid.Row="1">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                
+                                <GroupBox Grid.Column="0" Header="آخر المرضى المضافين" Margin="0,0,10,0">
+                                    <DataGrid Name="RecentPatientsGrid" Height="200">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="اسم المريض" Binding="{Binding FullName}" Width="*"/>
+                                            <DataGridTextColumn Header="رقم المريض" Binding="{Binding PatientNumber}" Width="100"/>
+                                            <DataGridTextColumn Header="تاريخ الإضافة" Binding="{Binding CreatedDate, StringFormat=dd/MM/yyyy}" Width="100"/>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                </GroupBox>
+                                
+                                <GroupBox Grid.Column="1" Header="التحاليل الأخيرة" Margin="10,0,0,0">
+                                    <DataGrid Name="RecentTestsGrid" Height="200">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="المريض" Binding="{Binding Patient.FullName}" Width="*"/>
+                                            <DataGridTextColumn Header="نوع التحليل" Binding="{Binding TestType.TestName}" Width="*"/>
+                                            <DataGridTextColumn Header="الحالة" Binding="{Binding Status}" Width="80"/>
+                                            <DataGridTextColumn Header="التاريخ" Binding="{Binding OrderDate, StringFormat=dd/MM/yyyy}" Width="80"/>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                </GroupBox>
+                            </Grid>
+                        </Grid>
+                    </TabItem>
                     
-                    <!-- Default Welcome Screen -->
-                    <Grid Name="WelcomeScreen" 
-                         Visibility="{Binding CurrentSectionContent, Converter={StaticResource NullToVisibilityConverter}}">
-                        <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="30">
-                            <StackPanel>
-                                <!-- Welcome Header -->
-                                <StackPanel HorizontalAlignment="Center" Margin="0,40,0,50">
-                                    <Ellipse Width="80" Height="80" Fill="{StaticResource AccentOrange}" Margin="0,0,0,20"/>
-                                    <TextBlock Text="مرحباً بك في نظام OGRA LAB" 
-                                             FontSize="28" FontWeight="Bold" 
-                                             HorizontalAlignment="Center" 
-                                             Foreground="{StaticResource DarkText}"
-                                             Margin="0,0,0,10"/>
-                                    
-                                    <TextBlock Text="نظام إدارة المختبر الطبي المتطور" 
-                                             FontSize="18" 
-                                             HorizontalAlignment="Center" 
-                                             Foreground="{StaticResource MediumGray}"/>
-                                </StackPanel>
-                                
-                                <!-- Quick Stats -->
-                                <Grid Margin="0,0,0,40">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-                                    
-                                    <Border Grid.Column="0" Background="{StaticResource AccentGreen}" 
-                                           CornerRadius="12" Padding="20" Margin="10">
-                                        <StackPanel HorizontalAlignment="Center">
-                                            <TextBlock Text="👥" FontSize="30" HorizontalAlignment="Center" Margin="0,0,0,8"/>
-                                            <TextBlock Text="المرضى" FontWeight="SemiBold" HorizontalAlignment="Center" Foreground="White" FontSize="14"/>
-                                            <TextBlock Text="{Binding TotalPatientsCount}" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center" Foreground="White"/>
-                                        </StackPanel>
-                                    </Border>
-                                    
-                                    <Border Grid.Column="1" Background="{StaticResource AccentOrange}" 
-                                           CornerRadius="12" Padding="20" Margin="10">
-                                        <StackPanel HorizontalAlignment="Center">
-                                            <TextBlock Text="🧪" FontSize="30" HorizontalAlignment="Center" Margin="0,0,0,8"/>
-                                            <TextBlock Text="التحاليل النشطة" FontWeight="SemiBold" HorizontalAlignment="Center" Foreground="White" FontSize="14"/>
-                                            <TextBlock Text="{Binding ActiveTestsCount}" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center" Foreground="White"/>
-                                        </StackPanel>
-                                    </Border>
-                                    
-                                    <Border Grid.Column="2" Background="#f59e0b" 
-                                           CornerRadius="12" Padding="20" Margin="10">
-                                        <StackPanel HorizontalAlignment="Center">
-                                            <TextBlock Text="⏳" FontSize="30" HorizontalAlignment="Center" Margin="0,0,0,8"/>
-                                            <TextBlock Text="المعلقة" FontWeight="SemiBold" HorizontalAlignment="Center" Foreground="White" FontSize="14"/>
-                                            <TextBlock Text="{Binding PendingTestsCount}" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center" Foreground="White"/>
-                                        </StackPanel>
-                                    </Border>
-                                    
-                                    <Border Grid.Column="3" Background="{StaticResource PrimaryDark}" 
-                                           CornerRadius="12" Padding="20" Margin="10">
-                                        <StackPanel HorizontalAlignment="Center">
-                                            <TextBlock Text="✅" FontSize="30" HorizontalAlignment="Center" Margin="0,0,0,8"/>
-                                            <TextBlock Text="مكتملة اليوم" FontWeight="SemiBold" HorizontalAlignment="Center" Foreground="White" FontSize="14"/>
-                                            <TextBlock Text="{Binding CompletedTodayCount}" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center" Foreground="White"/>
-                                        </StackPanel>
-                                    </Border>
-                                </Grid>
-                                
-                                <!-- Quick Actions -->
-                                <StackPanel>
-                                    <TextBlock Text="إجراءات سريعة" 
-                                             FontSize="20" FontWeight="Bold" 
-                                             Foreground="{StaticResource DarkText}"
-                                             Margin="0,0,0,20"/>
-                                    
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="*"/>
-                                        </Grid.ColumnDefinitions>
-                                        
-                                        <Button Grid.Column="0" 
-                                               Content="📋 إدارة المرضى"
-                                               Style="{StaticResource NavigationButton}"
-                                               Background="{StaticResource AccentGreen}"
-                                               Command="{Binding NavigateCommand}"
-                                               CommandParameter="PatientManagement"
-                                               Margin="10"
-                                               Padding="20,15"
-                                               FontSize="16"
-                                               Visibility="{Binding CanAddPatients, Converter={StaticResource BoolToVisibilityConverter}}"/>
-                                        
-                                        <Button Grid.Column="1" 
-                                               Content="🧪 إدخال النتائج"
-                                               Style="{StaticResource NavigationButton}"
-                                               Background="{StaticResource AccentOrange}"
-                                               Command="{Binding NavigateCommand}"
-                                               CommandParameter="ResultEntry"
-                                               Margin="10"
-                                               Padding="20,15"
-                                               FontSize="16"
-                                               Visibility="{Binding CanManageTests, Converter={StaticResource BoolToVisibilityConverter}}"/>
-                                        
-                                        <Button Grid.Column="2" 
-                                               Content="📊 معاينة النتائج"
-                                               Style="{StaticResource NavigationButton}"
-                                               Background="{StaticResource PrimaryDark}"
-                                               Command="{Binding NavigateCommand}"
-                                               CommandParameter="ReportView"
-                                               Margin="10"
-                                               Padding="20,15"
-                                               FontSize="16"
-                                               Visibility="{Binding CanManageTests, Converter={StaticResource BoolToVisibilityConverter}}"/>
-                                    </Grid>
-                                </StackPanel>
-                            </StackPanel>
-                        </ScrollViewer>
-                    </Grid>
-                </Grid>
-            </Border>
+                    <TabItem Header="البحث السريع">
+                        <StackPanel Margin="20">
+                            <TextBlock Text="البحث السريع عن المرضى" FontSize="18" FontWeight="Bold" Margin="0,0,0,15"/>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBox Grid.Column="0" Name="QuickSearchTextBox" FontSize="16" Padding="10" 
+                                       Watermark="ادخل اسم المريض أو رقم الهوية أو رقم المريض"/>
+                                <Button Grid.Column="1" Content="بحث" Padding="15,10" FontSize="16" 
+                                      Background="{StaticResource PrimaryColor}" Foreground="White"/>
+                            </Grid>
+                            <DataGrid Name="QuickSearchResultsGrid" Margin="0,20,0,0" Height="300">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="اسم المريض" Binding="{Binding FullName}" Width="*"/>
+                                    <DataGridTextColumn Header="رقم المريض" Binding="{Binding PatientNumber}" Width="120"/>
+                                    <DataGridTextColumn Header="رقم الهوية" Binding="{Binding NationalId}" Width="120"/>
+                                    <DataGridTextColumn Header="العمر" Binding="{Binding Age}" Width="60"/>
+                                    <DataGridTextColumn Header="رقم الهاتف" Binding="{Binding PhoneNumber}" Width="120"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </StackPanel>
+                    </TabItem>
+                </TabControl>
+            </Grid>
         </Grid>
         
         <!-- Status Bar -->
-        <Border Grid.Row="2" Background="{StaticResource MediumGray}" Padding="10,5">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                
-                <StackPanel Grid.Column="0" Orientation="Horizontal">
-                    <TextBlock Text="الحالة: " Foreground="White" FontWeight="SemiBold"/>
-                    <TextBlock Text="{Binding StatusMessage}" Foreground="White"/>
-                </StackPanel>
-                
-                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center">
-                    <TextBlock Text="قاعدة البيانات: " Foreground="White" FontWeight="SemiBold"/>
-                    <TextBlock Text="{Binding DatabaseStatus}" Foreground="White"/>
-                </StackPanel>
-                
-                <StackPanel Grid.Column="2" Orientation="Horizontal">
-                    <TextBlock Text="التاريخ والوقت: " Foreground="White" FontWeight="SemiBold"/>
-                    <TextBlock Name="StatusTimeLabel" Foreground="White"/>
-                </StackPanel>
-            </Grid>
-        </Border>
+        <StatusBar Grid.Row="2" Background="#F0F0F0">
+            <StatusBarItem>
+                <TextBlock Name="StatusLabel" Text="جاهز"/>
+            </StatusBarItem>
+            <Separator/>
+            <StatusBarItem>
+                <TextBlock Name="DatabaseStatusLabel" Text="متصل بقاعدة البيانات"/>
+            </StatusBarItem>
+            <StatusBarItem HorizontalAlignment="Right">
+                <TextBlock Name="TimeLabel"/>
+            </StatusBarItem>
+        </StatusBar>
     </Grid>
 </Window>

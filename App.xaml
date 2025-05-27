@@ -12,6 +12,10 @@
         <local:RoleToVisibilityConverter x:Key="RoleToVisibilityConverter"/>
         <local:RoleToBooleanConverter x:Key="RoleToBooleanConverter"/>
         <local:BoolToStringConverter x:Key="BoolToStringConverter"/>
+        <local:UserFormTitleConverter x:Key="UserFormTitleConverter"/>
+        <local:PasswordLabelConverter x:Key="PasswordLabelConverter"/>
+        <local:NavigationItemConverter x:Key="NavigationItemConverter"/>
+        <local:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
         
         <!-- Global Styles -->
         <Style TargetType="Button">

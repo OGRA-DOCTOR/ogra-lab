@@ -91,6 +91,7 @@ namespace OGRALAB
             services.AddTransient<LoginViewModel>();
             services.AddTransient<MainViewModel>();
             services.AddTransient<LoginLogViewModel>();
+            services.AddTransient<UserManagementViewModel>();
         }
 
         protected override void OnExit(ExitEventArgs e)

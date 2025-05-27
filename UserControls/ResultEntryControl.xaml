@@ -1,0 +1,170 @@
+<UserControl x:Class="OGRALAB.UserControls.ResultEntryControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             FlowDirection="RightToLeft"
+             FontFamily="Cairo, Segoe UI">
+    
+    <UserControl.Resources>
+        <!-- Color Resources -->
+        <SolidColorBrush x:Key="PrimaryDark" Color="#1e3a8a"/>
+        <SolidColorBrush x:Key="AccentOrange" Color="#f59e0b"/>
+        <SolidColorBrush x:Key="AccentGreen" Color="#10b981"/>
+        <SolidColorBrush x:Key="LightGray" Color="#f8fafc"/>
+        <SolidColorBrush x:Key="DarkText" Color="#1e293b"/>
+    </UserControl.Resources>
+    
+    <Grid Background="{StaticResource LightGray}">
+        <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="20">
+            <StackPanel>
+                <!-- Header -->
+                <Border Background="{StaticResource PrimaryDark}" CornerRadius="8" Padding="20" Margin="0,0,0,20">
+                    <StackPanel Orientation="Horizontal">
+                        <Ellipse Width="50" Height="50" Fill="{StaticResource AccentOrange}" Margin="0,0,15,0"/>
+                        <StackPanel>
+                            <TextBlock Text="إدخال النتائج" FontSize="24" FontWeight="Bold" Foreground="White"/>
+                            <TextBlock Text="إدخال وتسجيل نتائج التحاليل الطبية" FontSize="14" Foreground="#cbd5e1"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- Quick Actions -->
+                <Grid Margin="0,0,0,20">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <Border Grid.Column="0" Background="{StaticResource AccentGreen}" 
+                           CornerRadius="8" Padding="20" Margin="5">
+                        <StackPanel HorizontalAlignment="Center" Cursor="Hand">
+                            <TextBlock Text="🧪" FontSize="40" HorizontalAlignment="Center" Foreground="White"/>
+                            <TextBlock Text="تحليل جديد" FontSize="16" FontWeight="SemiBold" 
+                                     HorizontalAlignment="Center" Foreground="White"/>
+                        </StackPanel>
+                    </Border>
+                    
+                    <Border Grid.Column="1" Background="{StaticResource AccentOrange}" 
+                           CornerRadius="8" Padding="20" Margin="5">
+                        <StackPanel HorizontalAlignment="Center" Cursor="Hand">
+                            <TextBlock Text="📝" FontSize="40" HorizontalAlignment="Center" Foreground="White"/>
+                            <TextBlock Text="إدخال النتائج" FontSize="16" FontWeight="SemiBold" 
+                                     HorizontalAlignment="Center" Foreground="White"/>
+                        </StackPanel>
+                    </Border>
+                    
+                    <Border Grid.Column="2" Background="{StaticResource PrimaryDark}" 
+                           CornerRadius="8" Padding="20" Margin="5">
+                        <StackPanel HorizontalAlignment="Center" Cursor="Hand">
+                            <TextBlock Text="⏳" FontSize="40" HorizontalAlignment="Center" Foreground="White"/>
+                            <TextBlock Text="التحاليل المعلقة" FontSize="16" FontWeight="SemiBold" 
+                                     HorizontalAlignment="Center" Foreground="White"/>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+
+                <!-- Test Entry Form -->
+                <Border Background="White" CornerRadius="8" Padding="20" Margin="0,0,0,20">
+                    <Border.Effect>
+                        <DropShadowEffect Color="Black" Opacity="0.1" ShadowDepth="2" BlurRadius="8"/>
+                    </Border.Effect>
+                    
+                    <StackPanel>
+                        <TextBlock Text="معلومات التحليل" FontSize="18" FontWeight="Bold" 
+                                 Foreground="{StaticResource DarkText}" Margin="0,0,0,20"/>
+                        
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            
+                            <!-- Patient Selection -->
+                            <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,10,15">
+                                <TextBlock Text="المريض" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                                <ComboBox FontSize="14" Padding="10" BorderThickness="2" BorderBrush="#e2e8f0"/>
+                            </StackPanel>
+                            
+                            <!-- Test Type -->
+                            <StackPanel Grid.Row="0" Grid.Column="1" Margin="10,0,0,15">
+                                <TextBlock Text="نوع التحليل" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                                <ComboBox FontSize="14" Padding="10" BorderThickness="2" BorderBrush="#e2e8f0"/>
+                            </StackPanel>
+                            
+                            <!-- Test Date -->
+                            <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,10,15">
+                                <TextBlock Text="تاريخ التحليل" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                                <DatePicker FontSize="14" Padding="10" BorderThickness="2" BorderBrush="#e2e8f0"/>
+                            </StackPanel>
+                            
+                            <!-- Priority -->
+                            <StackPanel Grid.Row="1" Grid.Column="1" Margin="10,0,0,15">
+                                <TextBlock Text="الأولوية" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                                <ComboBox FontSize="14" Padding="10" BorderThickness="2" BorderBrush="#e2e8f0">
+                                    <ComboBoxItem Content="عادية"/>
+                                    <ComboBoxItem Content="مستعجلة"/>
+                                    <ComboBoxItem Content="طارئة"/>
+                                </ComboBox>
+                            </StackPanel>
+                            
+                            <!-- Notes -->
+                            <StackPanel Grid.Row="2" Grid.ColumnSpan="2" Margin="0,0,0,15">
+                                <TextBlock Text="ملاحظات" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                                <TextBox FontSize="14" Padding="10" BorderThickness="2" BorderBrush="#e2e8f0" 
+                                       Height="80" TextWrapping="Wrap" AcceptsReturn="True"/>
+                            </StackPanel>
+                        </Grid>
+                        
+                        <Button Content="💾 حفظ التحليل" 
+                               Background="{StaticResource AccentGreen}"
+                               Foreground="White"
+                               BorderThickness="0"
+                               Padding="20,10"
+                               FontSize="16"
+                               FontWeight="SemiBold"
+                               HorizontalAlignment="Center"
+                               Cursor="Hand"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Pending Tests -->
+                <Border Background="White" CornerRadius="8" Padding="20">
+                    <Border.Effect>
+                        <DropShadowEffect Color="Black" Opacity="0.1" ShadowDepth="2" BlurRadius="8"/>
+                    </Border.Effect>
+                    
+                    <StackPanel>
+                        <TextBlock Text="التحاليل المعلقة" FontSize="18" FontWeight="Bold" 
+                                 Foreground="{StaticResource DarkText}" Margin="0,0,0,15"/>
+                        
+                        <!-- Placeholder for pending tests -->
+                        <Border Background="#fff8dc" CornerRadius="6" Padding="40" MinHeight="150">
+                            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <TextBlock Text="⏳" FontSize="48" HorizontalAlignment="Center" Margin="0,0,0,10"/>
+                                <TextBlock Text="لا توجد تحاليل معلقة حالياً" FontSize="16" 
+                                         HorizontalAlignment="Center" Foreground="#856404"/>
+                            </StackPanel>
+                        </Border>
+                        
+                        <!-- Coming Soon Message -->
+                        <Border Background="#d1ecf1" CornerRadius="6" Padding="15" Margin="0,20,0,0">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="ℹ️" FontSize="20" Margin="0,0,10,0"/>
+                                <StackPanel>
+                                    <TextBlock Text="قيد التطوير" FontWeight="Bold" Foreground="#0c5460"/>
+                                    <TextBlock Text="سيتم تنفيذ وظائف إدخال النتائج الكاملة في التحديث القادم" 
+                                             FontSize="12" Foreground="#0c5460"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>
