@@ -16,6 +16,7 @@
         <local:PasswordLabelConverter x:Key="PasswordLabelConverter"/>
         <local:NavigationItemConverter x:Key="NavigationItemConverter"/>
         <local:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
+        <local:RadioButtonConverter x:Key="RadioButtonConverter"/>
         
         <!-- Global Styles -->
         <Style TargetType="Button">
