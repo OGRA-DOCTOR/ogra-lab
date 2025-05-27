@@ -45,6 +45,8 @@ namespace OGRALAB.ViewModels
             ManageUsersCommand = new RelayCommand(ManageUsers, CanManageUsers);
             NavigateCommand = new RelayCommand<string>(Navigate);
             LoadDataCommand = new RelayCommand(async () => await LoadDataAsync());
+            OpenTestDataManagementCommand = new RelayCommand(OpenTestDataManagement, CanViewAdminFeatures);
+            OpenPerformanceMonitorCommand = new RelayCommand(OpenPerformanceMonitor, CanViewAdminFeatures);
 
             LoadData();
         }
@@ -67,6 +69,7 @@ namespace OGRALAB.ViewModels
         public bool CanEditPatients => true; // All users can edit patients
         public bool CanViewReports => CurrentUser?.Role == "SystemUser" || CurrentUser?.Role == "AdminUser";
         public bool CanManageTests => true; // All users can manage tests
+        public bool CanViewAdminFeatures => CurrentUser?.Role == "Manager"; // Only Manager can access admin features
 
         // Dashboard Statistics
         public int TotalPatientsCount
@@ -125,6 +128,8 @@ namespace OGRALAB.ViewModels
         public ICommand ManageUsersCommand { get; }
         public ICommand NavigateCommand { get; }
         public ICommand LoadDataCommand { get; }
+        public ICommand OpenTestDataManagementCommand { get; }
+        public ICommand OpenPerformanceMonitorCommand { get; }
 
         private async void LoadData()
         {
@@ -152,6 +157,7 @@ namespace OGRALAB.ViewModels
                 OnPropertyChanged(nameof(CanEditPatients));
                 OnPropertyChanged(nameof(CanViewReports));
                 OnPropertyChanged(nameof(CanManageTests));
+                OnPropertyChanged(nameof(CanViewAdminFeatures));
                 OnPropertyChanged(nameof(CurrentUserDisplayName));
                 OnPropertyChanged(nameof(CurrentUserRole));
                 
@@ -249,6 +255,37 @@ namespace OGRALAB.ViewModels
         private bool CanManageUsers()
         {
             return CanViewUserManagement;
+        }
+
+        private void OpenTestDataManagement()
+        {
+            try
+            {
+                var testDataWindow = new Views.TestDataManagementWindow();
+                testDataWindow.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"خطأ في فتح نافذة إدارة البيانات التجريبية: {ex.Message}", "خطأ", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void OpenPerformanceMonitor()
+        {
+            try
+            {
+                var performanceWindow = new Views.PerformanceMonitorWindow();
+                performanceWindow.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"خطأ في فتح نافذة مراقب الأداء: {ex.Message}", "خطأ", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private bool CanViewAdminFeatures()
+        {
+            return CurrentUser?.Role == "Manager";
         }
 
         private void Navigate(string section)

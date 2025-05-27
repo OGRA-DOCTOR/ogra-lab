@@ -1,0 +1,339 @@
+<Window x:Class="OGRALAB.Views.SystemStatsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:OGRALAB.Helpers"
+        Title="إحصائيات النظام - OGRA LAB" 
+        Height="700" Width="1200"
+        WindowStartupLocation="CenterScreen"
+        FlowDirection="RightToLeft"
+        FontFamily="Cairo, Segoe UI">
+
+    <Window.Resources>
+        <!-- Converters -->
+        <local:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+        
+        <!-- Color Resources -->
+        <SolidColorBrush x:Key="PrimaryDark" Color="#1e3a8a"/>
+        <SolidColorBrush x:Key="AccentOrange" Color="#f59e0b"/>
+        <SolidColorBrush x:Key="AccentGreen" Color="#10b981"/>
+        <SolidColorBrush x:Key="AccentBlue" Color="#3b82f6"/>
+        <SolidColorBrush x:Key="AccentPurple" Color="#8b5cf6"/>
+        <SolidColorBrush x:Key="LightGray" Color="#f8fafc"/>
+        <SolidColorBrush x:Key="MediumGray" Color="#64748b"/>
+        <SolidColorBrush x:Key="DarkText" Color="#1e293b"/>
+        <SolidColorBrush x:Key="CardBackground" Color="White"/>
+
+        <!-- Card Style -->
+        <Style x:Key="StatsCard" TargetType="Border">
+            <Setter Property="Background" Value="{StaticResource CardBackground}"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Padding" Value="20"/>
+            <Setter Property="Margin" Value="10"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect Color="Black" Opacity="0.1" ShadowDepth="2" BlurRadius="8"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Button Style -->
+        <Style x:Key="ModernButton" TargetType="Button">
+            <Setter Property="Background" Value="{StaticResource AccentOrange}"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="15,8"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                                CornerRadius="6"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}">
+                            <ContentPresenter HorizontalAlignment="Center" 
+                                            VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#d97706"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="#b45309"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid Background="{StaticResource LightGray}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0" Background="{StaticResource PrimaryDark}" Padding="20,15">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="📊" FontSize="24" Margin="0,0,10,0"/>
+                <StackPanel>
+                    <TextBlock Text="إحصائيات النظام" FontSize="20" FontWeight="Bold" Foreground="White"/>
+                    <TextBlock Text="تقارير ومؤشرات أداء نظام OGRA LAB" FontSize="14" Foreground="#cbd5e1"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- Main Content -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="20">
+            <StackPanel>
+                <!-- Date Range Filter -->
+                <Border Style="{StaticResource StatsCard}" Margin="0,0,0,20">
+                    <StackPanel>
+                        <TextBlock Text="📅 تصفية الفترة الزمنية" FontSize="16" FontWeight="Bold" 
+                                 Foreground="{StaticResource DarkText}" Margin="0,0,0,15"/>
+                        
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="من تاريخ:" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                            <DatePicker SelectedDate="{Binding FromDate}" Margin="0,0,20,0"/>
+                            
+                            <TextBlock Text="إلى تاريخ:" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                            <DatePicker SelectedDate="{Binding ToDate}" Margin="0,0,20,0"/>
+                            
+                            <Button Content="🔄 تحديث" Style="{StaticResource ModernButton}"
+                                   Command="{Binding RefreshStatsCommand}"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- Dashboard Cards -->
+                <TextBlock Text="📈 لوحة المؤشرات الرئيسية" FontSize="18" FontWeight="Bold" 
+                         Foreground="{StaticResource DarkText}" Margin="0,0,0,15"/>
+                
+                <UniformGrid Columns="4" Margin="0,0,0,30">
+                    <!-- Total Patients -->
+                    <Border Style="{StaticResource StatsCard}" Background="{StaticResource AccentGreen}">
+                        <StackPanel HorizontalAlignment="Center">
+                            <TextBlock Text="👥" FontSize="32" HorizontalAlignment="Center" Foreground="White"/>
+                            <TextBlock Text="{Binding TotalPatients}" FontSize="24" FontWeight="Bold" 
+                                     HorizontalAlignment="Center" Foreground="White"/>
+                            <TextBlock Text="إجمالي المرضى" FontSize="12" HorizontalAlignment="Center" 
+                                     Foreground="White" Opacity="0.9"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Total Tests -->
+                    <Border Style="{StaticResource StatsCard}" Background="{StaticResource AccentBlue}">
+                        <StackPanel HorizontalAlignment="Center">
+                            <TextBlock Text="🧪" FontSize="32" HorizontalAlignment="Center" Foreground="White"/>
+                            <TextBlock Text="{Binding TotalTests}" FontSize="24" FontWeight="Bold" 
+                                     HorizontalAlignment="Center" Foreground="White"/>
+                            <TextBlock Text="إجمالي التحاليل" FontSize="12" HorizontalAlignment="Center" 
+                                     Foreground="White" Opacity="0.9"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Completed Tests -->
+                    <Border Style="{StaticResource StatsCard}" Background="{StaticResource AccentOrange}">
+                        <StackPanel HorizontalAlignment="Center">
+                            <TextBlock Text="✅" FontSize="32" HorizontalAlignment="Center" Foreground="White"/>
+                            <TextBlock Text="{Binding CompletedTests}" FontSize="24" FontWeight="Bold" 
+                                     HorizontalAlignment="Center" Foreground="White"/>
+                            <TextBlock Text="التحاليل المكتملة" FontSize="12" HorizontalAlignment="Center" 
+                                     Foreground="White" Opacity="0.9"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Pending Tests -->
+                    <Border Style="{StaticResource StatsCard}" Background="{StaticResource AccentPurple}">
+                        <StackPanel HorizontalAlignment="Center">
+                            <TextBlock Text="⏳" FontSize="32" HorizontalAlignment="Center" Foreground="White"/>
+                            <TextBlock Text="{Binding PendingTests}" FontSize="24" FontWeight="Bold" 
+                                     HorizontalAlignment="Center" Foreground="White"/>
+                            <TextBlock Text="التحاليل المعلقة" FontSize="12" HorizontalAlignment="Center" 
+                                     Foreground="White" Opacity="0.9"/>
+                        </StackPanel>
+                    </Border>
+                </UniformGrid>
+
+                <!-- Today's Statistics -->
+                <TextBlock Text="📊 إحصائيات اليوم" FontSize="18" FontWeight="Bold" 
+                         Foreground="{StaticResource DarkText}" Margin="0,0,0,15"/>
+                
+                <UniformGrid Columns="3" Margin="0,0,0,30">
+                    <!-- Today Patients -->
+                    <Border Style="{StaticResource StatsCard}">
+                        <StackPanel>
+                            <TextBlock Text="👤 مرضى اليوم" FontSize="14" FontWeight="SemiBold" 
+                                     Foreground="{StaticResource DarkText}" Margin="0,0,0,10"/>
+                            <TextBlock Text="{Binding TodayPatients}" FontSize="32" FontWeight="Bold" 
+                                     Foreground="{StaticResource AccentGreen}" HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Today Tests -->
+                    <Border Style="{StaticResource StatsCard}">
+                        <StackPanel>
+                            <TextBlock Text="🧪 تحاليل اليوم" FontSize="14" FontWeight="SemiBold" 
+                                     Foreground="{StaticResource DarkText}" Margin="0,0,0,10"/>
+                            <TextBlock Text="{Binding TodayTests}" FontSize="32" FontWeight="Bold" 
+                                     Foreground="{StaticResource AccentBlue}" HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Today Completion Rate -->
+                    <Border Style="{StaticResource StatsCard}">
+                        <StackPanel>
+                            <TextBlock Text="📈 معدل الإنجاز اليومي" FontSize="14" FontWeight="SemiBold" 
+                                     Foreground="{StaticResource DarkText}" Margin="0,0,0,10"/>
+                            <TextBlock Text="{Binding TodayCompletionRate}" FontSize="32" FontWeight="Bold" 
+                                     Foreground="{StaticResource AccentOrange}" HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+                </UniformGrid>
+
+                <!-- Performance Metrics -->
+                <TextBlock Text="⚡ مؤشرات الأداء" FontSize="18" FontWeight="Bold" 
+                         Foreground="{StaticResource DarkText}" Margin="0,0,0,15"/>
+                
+                <Grid Margin="0,0,0,30">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Average Processing Time -->
+                    <Border Grid.Column="0" Style="{StaticResource StatsCard}">
+                        <StackPanel>
+                            <TextBlock Text="⏰ متوسط وقت المعالجة" FontSize="14" FontWeight="SemiBold" 
+                                     Foreground="{StaticResource DarkText}" Margin="0,0,0,10"/>
+                            <TextBlock Text="{Binding AvgProcessingTimeFormatted}" FontSize="24" FontWeight="Bold" 
+                                     Foreground="{StaticResource AccentPurple}" HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Last Backup -->
+                    <Border Grid.Column="1" Style="{StaticResource StatsCard}">
+                        <StackPanel>
+                            <TextBlock Text="💾 آخر نسخة احتياطية" FontSize="14" FontWeight="SemiBold" 
+                                     Foreground="{StaticResource DarkText}" Margin="0,0,0,10"/>
+                            <TextBlock Text="{Binding LastBackupFormatted}" FontSize="24" FontWeight="Bold" 
+                                     Foreground="{StaticResource AccentGreen}" HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+
+                <!-- Status Distribution -->
+                <TextBlock Text="📋 توزيع حالات التحاليل" FontSize="18" FontWeight="Bold" 
+                         Foreground="{StaticResource DarkText}" Margin="0,0,0,15"/>
+                
+                <Border Style="{StaticResource StatsCard}" Margin="0,0,0,30">
+                    <ItemsControl ItemsSource="{Binding StatusStats}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <UniformGrid Columns="4"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Margin="10">
+                                    <TextBlock Text="{Binding Key}" FontSize="14" FontWeight="SemiBold" 
+                                             HorizontalAlignment="Center" Margin="0,0,0,5"/>
+                                    <TextBlock Text="{Binding Value}" FontSize="20" FontWeight="Bold" 
+                                             HorizontalAlignment="Center" Foreground="{StaticResource AccentBlue}"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </Border>
+
+                <!-- Most Requested Test Types -->
+                <TextBlock Text="🏆 أكثر التحاليل طلباً" FontSize="18" FontWeight="Bold" 
+                         Foreground="{StaticResource DarkText}" Margin="0,0,0,15"/>
+                
+                <Border Style="{StaticResource StatsCard}" Margin="0,0,0,30">
+                    <ItemsControl ItemsSource="{Binding TestTypeStats}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="0,5">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    
+                                    <TextBlock Grid.Column="0" Text="{Binding Key}" 
+                                             FontSize="14" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Column="1" Text="{Binding Value}" 
+                                             FontSize="14" FontWeight="Bold" 
+                                             Foreground="{StaticResource AccentOrange}"/>
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </Border>
+
+                <!-- Monthly Statistics Charts Placeholder -->
+                <TextBlock Text="📊 الإحصائيات الشهرية" FontSize="18" FontWeight="Bold" 
+                         Foreground="{StaticResource DarkText}" Margin="0,0,0,15"/>
+                
+                <Border Style="{StaticResource StatsCard}" Height="200" Margin="0,0,0,30">
+                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <TextBlock Text="📈" FontSize="48" HorizontalAlignment="Center" Opacity="0.3"/>
+                        <TextBlock Text="الرسوم البيانية" FontSize="16" FontWeight="SemiBold" 
+                                 HorizontalAlignment="Center" Foreground="{StaticResource MediumGray}"/>
+                        <TextBlock Text="سيتم إضافة الرسوم البيانية في تحديث قادم" 
+                                 FontSize="12" HorizontalAlignment="Center" 
+                                 Foreground="{StaticResource MediumGray}" Margin="0,5,0,0"/>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Action Bar -->
+        <Border Grid.Row="2" Background="{StaticResource CardBackground}" 
+               BorderBrush="#e2e8f0" BorderThickness="0,1,0,0" Padding="20,15">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button Content="📄 تصدير تقرير نصي" Style="{StaticResource ModernButton}"
+                       Command="{Binding ExportStatsReportCommand}"/>
+                
+                <Button Content="📊 تصدير JSON" Style="{StaticResource ModernButton}"
+                       Background="{StaticResource AccentGreen}"
+                       Command="{Binding ExportStatsJsonCommand}"/>
+                
+                <Button Content="📋 تصدير CSV" Style="{StaticResource ModernButton}"
+                       Background="{StaticResource AccentBlue}"
+                       Command="{Binding ExportStatsCsvCommand}"/>
+                
+                <Button Content="🔄 تحديث البيانات" Style="{StaticResource ModernButton}"
+                       Background="{StaticResource AccentPurple}"
+                       Command="{Binding LoadStatsCommand}"/>
+                
+                <Button Content="❌ إغلاق" Style="{StaticResource ModernButton}"
+                       Background="{StaticResource MediumGray}"
+                       Click="CloseButton_Click"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Loading Overlay -->
+        <Grid Grid.RowSpan="3" 
+             Background="#80000000" 
+             Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibilityConverter}}">
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                <ProgressBar IsIndeterminate="True" 
+                           Width="200" 
+                           Height="4" 
+                           Background="Transparent" 
+                           Foreground="{StaticResource AccentOrange}"/>
+                <TextBlock Text="جاري تحميل الإحصائيات..." 
+                         Foreground="White" 
+                         FontSize="16" 
+                         Margin="0,15,0,0"
+                         HorizontalAlignment="Center"/>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>

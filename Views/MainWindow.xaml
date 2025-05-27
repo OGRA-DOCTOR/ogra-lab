@@ -291,6 +291,20 @@
                             </Button.Style>
                         </Button>
                         
+                        <Button Content="🧪 البيانات التجريبية" 
+                               Command="{Binding OpenTestDataManagementCommand}"
+                               Visibility="{Binding CanViewAdminFeatures, Converter={StaticResource BoolToVisibilityConverter}}"
+                               Style="{StaticResource NavigationButton}"
+                               Margin="0,5,0,0"
+                               ToolTip="إدارة البيانات التجريبية وإنشاء بيانات الاختبار"/>
+                        
+                        <Button Content="⚡ مراقب الأداء" 
+                               Command="{Binding OpenPerformanceMonitorCommand}"
+                               Visibility="{Binding CanViewAdminFeatures, Converter={StaticResource BoolToVisibilityConverter}}"
+                               Style="{StaticResource NavigationButton}"
+                               Margin="0,5,0,0"
+                               ToolTip="مراقبة أداء النظام وتحسين الذاكرة"/>
+                        
                         <!-- Statistics Section -->
                         <Border Background="#2563eb" 
                               CornerRadius="8" 

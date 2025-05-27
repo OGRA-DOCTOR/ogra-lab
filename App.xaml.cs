@@ -7,6 +7,7 @@ using OGRALAB.Views;
 using OGRALAB.ViewModels;
 using System;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace OGRALAB
@@ -14,6 +15,9 @@ namespace OGRALAB
     public partial class App : Application
     {
         private IHost? _host;
+        private ILoggingService? _loggingService;
+        private IErrorHandlingService? _errorHandlingService;
+        private IPerformanceService? _performanceService;
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {
@@ -34,6 +38,23 @@ namespace OGRALAB
 
                 // Start the host
                 _host.Start();
+
+                // Store service provider for global access
+                Current.Properties["ServiceProvider"] = _host.Services;
+
+                // Initialize core services
+                _loggingService = _host.Services.GetRequiredService<ILoggingService>();
+                _errorHandlingService = _host.Services.GetRequiredService<IErrorHandlingService>();
+                _performanceService = _host.Services.GetRequiredService<IPerformanceService>();
+
+                // Set up global exception handlers
+                SetupExceptionHandlers();
+
+                // Start performance monitoring
+                _performanceService.StartPerformanceMonitoring();
+
+                // Log application startup
+                await _loggingService.LogInfoAsync("تم بدء تشغيل OGRA LAB بنجاح", "Application");
 
                 // Show login window
                 ShowLoginWindow();
@@ -85,6 +106,14 @@ namespace OGRALAB
             services.AddScoped<IPatientService, PatientService>();
             services.AddScoped<ITestService, TestService>();
             services.AddScoped<IReportService, ReportService>();
+            services.AddScoped<ISettingsService, SettingsService>();
+            services.AddScoped<IBackupService, BackupService>();
+            services.AddScoped<IStatsService, StatsService>();
+            services.AddSingleton<ILoggingService, LoggingService>();
+            services.AddSingleton<IErrorHandlingService, ErrorHandlingService>();
+            services.AddSingleton<IPerformanceService, PerformanceService>();
+            services.AddScoped<ITestDataService, TestDataService>();
+            services.AddScoped<IDatabaseOptimizationService, DatabaseOptimizationService>();
             services.AddSingleton<IAuthenticationService, AuthenticationService>();
 
             // Add ViewModels
@@ -100,12 +129,96 @@ namespace OGRALAB
             services.AddTransient<TestTypesManagementViewModel>();
             services.AddTransient<ReportViewViewModel>();
             services.AddTransient<TestGroupsManagementViewModel>();
+            services.AddTransient<SettingsViewModel>();
+            services.AddTransient<SystemStatsViewModel>();
+            services.AddTransient<BackupManagementViewModel>();
+            services.AddTransient<TestDataManagementViewModel>();
+            services.AddTransient<PerformanceMonitorViewModel>();
+        }
+
+        private void SetupExceptionHandlers()
+        {
+            // Handle unhandled exceptions in main UI thread
+            DispatcherUnhandledException += App_DispatcherUnhandledException;
+            
+            // Handle unhandled exceptions in background threads
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+            
+            // Handle unhandled exceptions in tasks
+            TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
+        }
+
+        private async void App_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
+        {
+            try
+            {
+                await _loggingService?.LogErrorAsync("خطأ غير معالج في واجهة المستخدم", e.Exception, "Application");
+                _errorHandlingService?.ShowError(e.Exception, "حدث خطأ غير متوقع في النظام");
+                e.Handled = true; // Prevent application crash
+            }
+            catch
+            {
+                // Fallback error handling
+                MessageBox.Show("حدث خطأ حرج في النظام", "خطأ", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private async void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            try
+            {
+                if (e.ExceptionObject is Exception exception)
+                {
+                    await _loggingService?.LogErrorAsync("خطأ غير معالج في النطاق", exception, "Application");
+                    
+                    if (!e.IsTerminating)
+                    {
+                        _errorHandlingService?.ShowError(exception, "حدث خطأ غير متوقع");
+                    }
+                }
+            }
+            catch
+            {
+                // Silent fail for shutdown errors
+            }
+        }
+
+        private async void TaskScheduler_UnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs e)
+        {
+            try
+            {
+                await _loggingService?.LogErrorAsync("خطأ غير معالج في مهمة خلفية", e.Exception, "Application");
+                e.SetObserved(); // Prevent application crash
+            }
+            catch
+            {
+                // Silent fail
+            }
         }
 
         protected override void OnExit(ExitEventArgs e)
         {
-            _host?.Dispose();
-            base.OnExit(e);
+            try
+            {
+                // Log application shutdown
+                _loggingService?.LogInfoAsync("إغلاق OGRA LAB", "Application");
+                
+                // Stop performance monitoring
+                _performanceService?.StopPerformanceMonitoring();
+                
+                // Cleanup resources
+                _performanceService?.CleanupResources();
+                _performanceService?.Dispose();
+            }
+            catch
+            {
+                // Silent fail during shutdown
+            }
+            finally
+            {
+                _host?.Dispose();
+                base.OnExit(e);
+            }
         }
 
         public static T GetService<T>() where T : class

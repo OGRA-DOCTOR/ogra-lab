@@ -1,0 +1,320 @@
+&lt;Window x:Class="OGRALAB.Views.PerformanceMonitorWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:helpers="clr-namespace:OGRALAB.Helpers"
+        Title="⚡ مراقب الأداء - OGRA LAB" 
+        Height="600" Width="800"
+        WindowStartupLocation="CenterScreen"
+        Background="#F5F5F5"
+        FontFamily="Segoe UI"
+        ResizeMode="CanResize"
+        MinHeight="500" MinWidth="700">
+
+    <Window.Resources>
+        <helpers:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+        
+        <Style x:Key="MetricCardStyle" TargetType="Border">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="BorderBrush" Value="#E0E0E0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="15"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect BlurRadius="5" ShadowDepth="2" Opacity="0.1"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="MetricTitleStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="Foreground" Value="#7F8C8D"/>
+            <Setter Property="Margin" Value="0,0,0,5"/>
+        </Style>
+
+        <Style x:Key="MetricValueStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="20"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="#2C3E50"/>
+        </Style>
+
+        <Style x:Key="ActionButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#3498DB"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="12,6"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="CornerRadius" Value="4"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                                CornerRadius="{TemplateBinding Border.CornerRadius}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                BorderBrush="{TemplateBinding BorderBrush}">
+                            <ContentPresenter HorizontalAlignment="Center" 
+                                            VerticalAlignment="Center"
+                                            Margin="{TemplateBinding Padding}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#2980B9"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0" Background="#34495E" Padding="20,15">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                
+                <StackPanel Grid.Column="0" Orientation="Horizontal">
+                    <TextBlock Text="⚡" FontSize="24" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                    <TextBlock Text="مراقب الأداء والذاكرة" 
+                             FontSize="18" FontWeight="Bold" 
+                             Foreground="White" VerticalAlignment="Center"/>
+                </StackPanel>
+                
+                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                    <Button Content="🔄 تحديث" Style="{StaticResource ActionButtonStyle}"
+                            Command="{Binding RefreshCommand}"/>
+                    <Button Content="❌ إغلاق" Style="{StaticResource ActionButtonStyle}"
+                            Background="#E74C3C" Click="CloseButton_Click"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Main Content -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="10">
+            <StackPanel>
+                
+                <!-- Real-time Metrics -->
+                <TextBlock Text="📊 مؤشرات الأداء المباشرة" FontSize="16" FontWeight="Bold" 
+                         Foreground="#2C3E50" Margin="10,10,0,15"/>
+                
+                <UniformGrid Columns="4" Rows="2" Margin="5">
+                    <!-- Memory Usage -->
+                    <Border Style="{StaticResource MetricCardStyle}">
+                        <StackPanel>
+                            <TextBlock Text="استخدام الذاكرة" Style="{StaticResource MetricTitleStyle}"/>
+                            <TextBlock Text="{Binding MemoryUsageMB, StringFormat='{}{0:F1} MB'}" 
+                                     Style="{StaticResource MetricValueStyle}" Foreground="#E74C3C"/>
+                            <ProgressBar Value="{Binding MemoryUsagePercentage}" 
+                                       Maximum="100" Height="6" Margin="0,5,0,0"
+                                       Foreground="#E74C3C"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- CPU Usage -->
+                    <Border Style="{StaticResource MetricCardStyle}">
+                        <StackPanel>
+                            <TextBlock Text="استخدام المعالج" Style="{StaticResource MetricTitleStyle}"/>
+                            <TextBlock Text="{Binding CpuUsage, StringFormat='{}{0:F1}%'}" 
+                                     Style="{StaticResource MetricValueStyle}" Foreground="#F39C12"/>
+                            <ProgressBar Value="{Binding CpuUsage}" 
+                                       Maximum="100" Height="6" Margin="0,5,0,0"
+                                       Foreground="#F39C12"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Database Size -->
+                    <Border Style="{StaticResource MetricCardStyle}">
+                        <StackPanel>
+                            <TextBlock Text="حجم قاعدة البيانات" Style="{StaticResource MetricTitleStyle}"/>
+                            <TextBlock Text="{Binding DatabaseSizeMB, StringFormat='{}{0:F1} MB'}" 
+                                     Style="{StaticResource MetricValueStyle}" Foreground="#3498DB"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Uptime -->
+                    <Border Style="{StaticResource MetricCardStyle}">
+                        <StackPanel>
+                            <TextBlock Text="وقت التشغيل" Style="{StaticResource MetricTitleStyle}"/>
+                            <TextBlock Text="{Binding UptimeString}" 
+                                     Style="{StaticResource MetricValueStyle}" Foreground="#27AE60" FontSize="16"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Cache Hit Ratio -->
+                    <Border Style="{StaticResource MetricCardStyle}">
+                        <StackPanel>
+                            <TextBlock Text="معدل إصابة التخزين المؤقت" Style="{StaticResource MetricTitleStyle}"/>
+                            <TextBlock Text="{Binding CacheHitRatio, StringFormat='{}{0}%'}" 
+                                     Style="{StaticResource MetricValueStyle}" Foreground="#9B59B6"/>
+                            <ProgressBar Value="{Binding CacheHitRatio}" 
+                                       Maximum="100" Height="6" Margin="0,5,0,0"
+                                       Foreground="#9B59B6"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Active Connections -->
+                    <Border Style="{StaticResource MetricCardStyle}">
+                        <StackPanel>
+                            <TextBlock Text="الاتصالات النشطة" Style="{StaticResource MetricTitleStyle}"/>
+                            <TextBlock Text="{Binding ActiveConnections}" 
+                                     Style="{StaticResource MetricValueStyle}" Foreground="#16A085"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Record Counts -->
+                    <Border Style="{StaticResource MetricCardStyle}">
+                        <StackPanel>
+                            <TextBlock Text="إجمالي السجلات" Style="{StaticResource MetricTitleStyle}"/>
+                            <TextBlock Text="{Binding TotalRecords, StringFormat='{}{0:N0}'}" 
+                                     Style="{StaticResource MetricValueStyle}" Foreground="#E67E22"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Performance Score -->
+                    <Border Style="{StaticResource MetricCardStyle}">
+                        <StackPanel>
+                            <TextBlock Text="نقاط الأداء" Style="{StaticResource MetricTitleStyle}"/>
+                            <TextBlock Text="{Binding PerformanceScore, StringFormat='{}{0}/100'}" 
+                                     Style="{StaticResource MetricValueStyle}" Foreground="{Binding PerformanceScoreColor}"/>
+                            <ProgressBar Value="{Binding PerformanceScore}" 
+                                       Maximum="100" Height="6" Margin="0,5,0,0"
+                                       Foreground="{Binding PerformanceScoreColor}"/>
+                        </StackPanel>
+                    </Border>
+                </UniformGrid>
+
+                <!-- Optimization Suggestions -->
+                <TextBlock Text="💡 اقتراحات التحسين" FontSize="16" FontWeight="Bold" 
+                         Foreground="#2C3E50" Margin="10,30,0,15"/>
+                
+                <Border Background="White" CornerRadius="8" BorderBrush="#E0E0E0" BorderThickness="1" 
+                        Padding="15" Margin="10,0">
+                    <StackPanel>
+                        <ItemsControl ItemsSource="{Binding OptimizationSuggestions}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Background="{Binding BackgroundColor}" 
+                                            CornerRadius="4" Margin="0,2" Padding="10,8">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            
+                                            <TextBlock Grid.Column="0" Text="{Binding Icon}" FontSize="16" 
+                                                     Margin="0,0,10,0" VerticalAlignment="Center"/>
+                                            
+                                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding Title}" FontWeight="Bold" FontSize="12"/>
+                                                <TextBlock Text="{Binding Description}" FontSize="11" 
+                                                         Foreground="#7F8C8D" TextWrapping="Wrap"/>
+                                            </StackPanel>
+                                            
+                                            <TextBlock Grid.Column="2" Text="{Binding Impact}" FontSize="10" 
+                                                     Foreground="{Binding ImpactColor}" FontWeight="Bold"
+                                                     VerticalAlignment="Center" Margin="10,0"/>
+                                            
+                                            <Button Grid.Column="3" Content="تطبيق" 
+                                                  Style="{StaticResource ActionButtonStyle}" FontSize="10"
+                                                  Command="{Binding DataContext.ApplyOptimizationCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                  CommandParameter="{Binding Id}"
+                                                  IsEnabled="{Binding IsAutoApplicable}"
+                                                  VerticalAlignment="Center"/>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        
+                        <TextBlock Text="لا توجد اقتراحات تحسين حالياً ✅" 
+                                 HorizontalAlignment="Center" FontStyle="Italic" 
+                                 Foreground="#27AE60" Margin="20"
+                                 Visibility="{Binding HasOptimizationSuggestions, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Invert}"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Performance Actions -->
+                <TextBlock Text="🛠️ أدوات التحسين" FontSize="16" FontWeight="Bold" 
+                         Foreground="#2C3E50" Margin="10,30,0,15"/>
+                
+                <Border Background="White" CornerRadius="8" BorderBrush="#E0E0E0" BorderThickness="1" 
+                        Padding="20" Margin="10,0">
+                    <UniformGrid Columns="2" Rows="2">
+                        <StackPanel Margin="10">
+                            <TextBlock Text="🧹 تنظيف الذاكرة" FontWeight="Bold" Margin="0,0,0,5"/>
+                            <TextBlock Text="تحرير الذاكرة غير المستخدمة وتحسين الأداء" 
+                                     FontSize="11" Foreground="#7F8C8D" Margin="0,0,0,10"/>
+                            <Button Content="تنظيف الذاكرة" Style="{StaticResource ActionButtonStyle}"
+                                    Command="{Binding OptimizeMemoryCommand}"/>
+                        </StackPanel>
+                        
+                        <StackPanel Margin="10">
+                            <TextBlock Text="💾 تحسين قاعدة البيانات" FontWeight="Bold" Margin="0,0,0,5"/>
+                            <TextBlock Text="تنفيذ VACUUM وإعادة الفهرسة" 
+                                     FontSize="11" Foreground="#7F8C8D" Margin="0,0,0,10"/>
+                            <Button Content="تحسين قاعدة البيانات" Style="{StaticResource ActionButtonStyle}"
+                                    Command="{Binding OptimizeDatabaseCommand}"/>
+                        </StackPanel>
+                        
+                        <StackPanel Margin="10">
+                            <TextBlock Text="🗂️ مسح التخزين المؤقت" FontWeight="Bold" Margin="0,0,0,5"/>
+                            <TextBlock Text="مسح البيانات المؤقتة المنتهية الصلاحية" 
+                                     FontSize="11" Foreground="#7F8C8D" Margin="0,0,0,10"/>
+                            <Button Content="مسح التخزين المؤقت" Style="{StaticResource ActionButtonStyle}"
+                                    Command="{Binding ClearCacheCommand}"/>
+                        </StackPanel>
+                        
+                        <StackPanel Margin="10">
+                            <TextBlock Text="📊 تقرير الأداء" FontWeight="Bold" Margin="0,0,0,5"/>
+                            <TextBlock Text="إنشاء تقرير مفصل عن أداء النظام" 
+                                     FontSize="11" Foreground="#7F8C8D" Margin="0,0,0,10"/>
+                            <Button Content="إنشاء تقرير" Style="{StaticResource ActionButtonStyle}"
+                                    Command="{Binding GenerateReportCommand}"/>
+                        </StackPanel>
+                    </UniformGrid>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Footer -->
+        <Border Grid.Row="2" Background="#ECF0F1" Padding="15,10" BorderBrush="#BDC3C7" BorderThickness="0,1,0,0">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                
+                <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock Text="🕒 آخر تحديث:" FontSize="11" Foreground="#7F8C8D" Margin="0,0,5,0"/>
+                    <TextBlock Text="{Binding LastUpdateTime, StringFormat='{}{0:HH:mm:ss}'}" 
+                             FontSize="11" Foreground="#34495E"/>
+                    <TextBlock Text="| 🔄 التحديث التلقائي:" FontSize="11" Foreground="#7F8C8D" Margin="15,0,5,0"/>
+                    <TextBlock Text="{Binding AutoRefreshStatus}" FontSize="11" Foreground="#27AE60"/>
+                </StackPanel>
+                
+                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                    <ToggleButton Content="⏸️ إيقاف التحديث التلقائي" IsChecked="{Binding AutoRefreshEnabled}"
+                                Style="{StaticResource {x:Type ToggleButton}}" 
+                                FontSize="11" Padding="8,4" Margin="5,0"/>
+                    <Button Content="🚪 إغلاق" Style="{StaticResource ActionButtonStyle}"
+                            Background="#E74C3C" Click="CloseButton_Click"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>
