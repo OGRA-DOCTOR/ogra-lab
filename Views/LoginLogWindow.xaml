@@ -1,0 +1,244 @@
+<Window x:Class="OGRALAB.Views.LoginLogWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:OGRALAB.Helpers"
+        Title="سجل الدخول والخروج - OGRA LAB" 
+        Height="600" Width="900"
+        WindowStartupLocation="CenterOwner"
+        FlowDirection="RightToLeft"
+        FontFamily="Segoe UI">
+    
+    <Window.Resources>
+        <Style x:Key="ModernButton" TargetType="Button">
+            <Setter Property="Background" Value="#2E7D32"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="15,8"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                                CornerRadius="5"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}">
+                            <ContentPresenter HorizontalAlignment="Center" 
+                                            VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#4CAF50"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="#1B5E20"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Background" Value="#BDBDBD"/>
+                                <Setter Property="Foreground" Value="#757575"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="WarningButton" TargetType="Button" BasedOn="{StaticResource ModernButton}">
+            <Setter Property="Background" Value="#F44336"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#F66"/>
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Background" Value="#D32F2F"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="InfoButton" TargetType="Button" BasedOn="{StaticResource ModernButton}">
+            <Setter Property="Background" Value="#2196F3"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#42A5F5"/>
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Background" Value="#1976D2"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0" Background="#2E7D32" Padding="20,15">
+            <StackPanel Orientation="Horizontal">
+                <Ellipse Width="35" Height="35" Fill="#81C784" Margin="0,0,15,0"/>
+                <StackPanel>
+                    <TextBlock Text="سجل الدخول والخروج" FontSize="20" FontWeight="Bold" Foreground="White"/>
+                    <TextBlock Text="عرض جميع عمليات تسجيل الدخول والخروج من النظام" FontSize="12" Foreground="#E8F5E8"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- Filter Controls -->
+        <Border Grid.Row="1" Background="#F5F5F5" Padding="20,15" BorderBrush="#E0E0E0" BorderThickness="0,0,0,1">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="200"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="200"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Column="0" Text="من تاريخ:" VerticalAlignment="Center" FontWeight="SemiBold" Margin="0,0,10,0"/>
+                <DatePicker Grid.Column="1" SelectedDate="{Binding FromDate}" Margin="0,0,20,0"/>
+
+                <TextBlock Grid.Column="2" Text="إلى تاريخ:" VerticalAlignment="Center" FontWeight="SemiBold" Margin="0,0,10,0"/>
+                <DatePicker Grid.Column="3" SelectedDate="{Binding ToDate}" Margin="0,0,20,0"/>
+
+                <StackPanel Grid.Column="5" Orientation="Horizontal">
+                    <Button Content="🔄 تحديث" 
+                           Style="{StaticResource ModernButton}"
+                           Command="{Binding RefreshCommand}"/>
+                    <Button Content="📤 تصدير" 
+                           Style="{StaticResource InfoButton}"
+                           Command="{Binding ExportLogsCommand}"/>
+                    <Button Content="🗑️ حذف السجلات" 
+                           Style="{StaticResource WarningButton}"
+                           Command="{Binding ClearLogsCommand}"
+                           Visibility="{Binding CanDeleteLogs, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Data Grid -->
+        <DataGrid Grid.Row="2" 
+                 ItemsSource="{Binding LoginLogs}"
+                 SelectedItem="{Binding SelectedLoginLog}"
+                 AutoGenerateColumns="False"
+                 IsReadOnly="True"
+                 GridLinesVisibility="Horizontal"
+                 HeadersVisibility="Column"
+                 CanUserAddRows="False"
+                 CanUserDeleteRows="False"
+                 CanUserReorderColumns="True"
+                 CanUserResizeColumns="True"
+                 CanUserSortColumns="True"
+                 AlternatingRowBackground="#F9F9F9"
+                 SelectionMode="Single"
+                 FontSize="12">
+            
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="المستخدم" Binding="{Binding Username}" Width="120"/>
+                <DataGridTextColumn Header="الاسم الكامل" Binding="{Binding User.FullName}" Width="150"/>
+                <DataGridTextColumn Header="نوع العملية" Binding="{Binding ActionType}" Width="80">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ActionType}" Value="Login">
+                                    <Setter Property="Foreground" Value="#4CAF50"/>
+                                    <Setter Property="FontWeight" Value="SemiBold"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding ActionType}" Value="Logout">
+                                    <Setter Property="Foreground" Value="#FF9800"/>
+                                    <Setter Property="FontWeight" Value="SemiBold"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding ActionType}" Value="Failed">
+                                    <Setter Property="Foreground" Value="#F44336"/>
+                                    <Setter Property="FontWeight" Value="SemiBold"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn Header="تاريخ العملية" Binding="{Binding ActionDate, StringFormat=dd/MM/yyyy}" Width="100"/>
+                <DataGridTextColumn Header="وقت العملية" Binding="{Binding ActionDate, StringFormat=HH:mm:ss}" Width="80"/>
+                <DataGridTextColumn Header="وقت الخروج" Binding="{Binding LogoutTime, StringFormat=HH:mm:ss}" Width="80"/>
+                <DataGridTextColumn Header="مدة الجلسة" Width="100">
+                    <DataGridTextColumn.Binding>
+                        <Binding Path="SessionDuration" StringFormat="{}{0:hh\:mm\:ss}"/>
+                    </DataGridTextColumn.Binding>
+                </DataGridTextColumn>
+                <DataGridTextColumn Header="عنوان IP" Binding="{Binding IpAddress}" Width="120"/>
+                <DataGridTextColumn Header="حالة العملية" Width="80">
+                    <DataGridTextColumn.Binding>
+                        <Binding Path="IsSuccessful">
+                            <Binding.Converter>
+                                <local:BoolToStringConverter TrueValue="نجح" FalseValue="فشل"/>
+                            </Binding.Converter>
+                        </Binding>
+                    </DataGridTextColumn.Binding>
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsSuccessful}" Value="True">
+                                    <Setter Property="Foreground" Value="#4CAF50"/>
+                                    <Setter Property="FontWeight" Value="SemiBold"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding IsSuccessful}" Value="False">
+                                    <Setter Property="Foreground" Value="#F44336"/>
+                                    <Setter Property="FontWeight" Value="SemiBold"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn Header="سبب الفشل" Binding="{Binding FailureReason}" Width="200"/>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <!-- Status Bar -->
+        <Border Grid.Row="3" Background="#F0F0F0" Padding="15,10" BorderBrush="#E0E0E0" BorderThickness="0,1,0,0">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" Orientation="Horizontal">
+                    <TextBlock Text="إجمالي السجلات: " FontWeight="SemiBold"/>
+                    <TextBlock Text="{Binding LoginLogs.Count}" FontWeight="Bold" Foreground="#2E7D32"/>
+                    <TextBlock Text=" | النطاق الزمني: " Margin="20,0,0,0" FontWeight="SemiBold"/>
+                    <TextBlock Text="{Binding FromDate, StringFormat=dd/MM/yyyy}" FontWeight="Bold"/>
+                    <TextBlock Text=" - "/>
+                    <TextBlock Text="{Binding ToDate, StringFormat=dd/MM/yyyy}" FontWeight="Bold"/>
+                </StackPanel>
+
+                <Button Grid.Column="1" 
+                       Content="إغلاق" 
+                       Style="{StaticResource ModernButton}"
+                       Background="#757575"
+                       Click="CloseButton_Click"/>
+            </Grid>
+        </Border>
+
+        <!-- Loading Overlay -->
+        <Grid Grid.Row="0" Grid.RowSpan="4" 
+             Background="#80000000" 
+             Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibilityConverter}}">
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                <ProgressBar IsIndeterminate="True" 
+                           Width="200" 
+                           Height="4" 
+                           Background="Transparent" 
+                           Foreground="#4CAF50"/>
+                <TextBlock Text="جاري تحميل السجلات..." 
+                         Foreground="White" 
+                         FontSize="14" 
+                         Margin="0,10,0,0"
+                         HorizontalAlignment="Center"/>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>

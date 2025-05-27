@@ -26,7 +26,7 @@ namespace OGRALAB.Models
 
         [Required]
         [StringLength(20)]
-        public string Role { get; set; } = string.Empty; // Admin, Doctor, Technician
+        public string Role { get; set; } = string.Empty; // SystemUser, AdminUser, RegularUser
 
         public bool IsActive { get; set; } = true;
 

@@ -1,16 +1,20 @@
 using System;
 using System.Windows;
 using System.Windows.Threading;
+using OGRALAB.ViewModels;
 
 namespace OGRALAB.Views
 {
     public partial class MainWindow : Window
     {
         private DispatcherTimer? _timer;
+        public MainViewModel ViewModel { get; }
 
         public MainWindow()
         {
             InitializeComponent();
+            ViewModel = App.GetService<MainViewModel>();
+            DataContext = ViewModel;
             InitializeWindow();
         }
 
@@ -41,17 +45,7 @@ namespace OGRALAB.Views
         {
             try
             {
-                // TODO: Load actual data from database
-                // For now, set sample data
-                TotalPatientsLabel.Text = "0";
-                ActiveTestsLabel.Text = "0";
-                PendingTestsLabel.Text = "0";
-                CompletedTodayLabel.Text = "0";
-                
-                TodayPatientsCount.Text = "0";
-                CompletedTestsCount.Text = "0";
-                PendingTestsCount.Text = "0";
-                
+                // Data is now loaded through ViewModel
                 StatusLabel.Text = "تم تحميل البيانات بنجاح";
             }
             catch (Exception ex)

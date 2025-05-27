@@ -3,6 +3,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using OGRALAB.Data;
 using OGRALAB.Services;
+using OGRALAB.Views;
+using OGRALAB.ViewModels;
 using System;
 using System.IO;
 using System.Windows;
@@ -13,10 +15,8 @@ namespace OGRALAB
     {
         private IHost? _host;
 
-        protected override void OnStartup(StartupEventArgs e)
+        private void Application_Startup(object sender, StartupEventArgs e)
         {
-            base.OnStartup(e);
-
             try
             {
                 // Create host builder
@@ -34,11 +34,35 @@ namespace OGRALAB
 
                 // Start the host
                 _host.Start();
+
+                // Show login window
+                ShowLoginWindow();
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"حدث خطأ أثناء بدء التطبيق: {ex.Message}", "خطأ", MessageBoxButton.OK, MessageBoxImage.Error);
                 Environment.Exit(1);
+            }
+        }
+
+        public void ShowLoginWindow()
+        {
+            var authService = GetService<IAuthenticationService>();
+            var loginViewModel = new LoginViewModel(authService);
+            var loginWindow = new LoginWindow(loginViewModel);
+
+            var result = loginWindow.ShowDialog();
+            
+            if (result == true && authService.IsAuthenticated)
+            {
+                // Show main window
+                var mainWindow = new MainWindow();
+                mainWindow.Show();
+            }
+            else
+            {
+                // User cancelled login, exit application
+                Shutdown();
             }
         }
 
@@ -63,9 +87,10 @@ namespace OGRALAB
             services.AddScoped<IReportService, ReportService>();
             services.AddSingleton<IAuthenticationService, AuthenticationService>();
 
-            // Add ViewModels (can be added later as needed)
-            // services.AddTransient<MainViewModel>();
-            // services.AddTransient<LoginViewModel>();
+            // Add ViewModels
+            services.AddTransient<LoginViewModel>();
+            services.AddTransient<MainViewModel>();
+            services.AddTransient<LoginLogViewModel>();
         }
 
         protected override void OnExit(ExitEventArgs e)

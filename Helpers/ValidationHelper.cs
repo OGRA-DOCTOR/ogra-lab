@@ -223,7 +223,7 @@ namespace OGRALAB.Helpers
             if (string.IsNullOrWhiteSpace(role))
                 return false;
 
-            var validRoles = new[] { "Admin", "Doctor", "Technician", "Receptionist" };
+            var validRoles = new[] { "SystemUser", "AdminUser", "RegularUser" };
             return Array.Exists(validRoles, r => r.Equals(role.Trim(), StringComparison.OrdinalIgnoreCase));
         }
     }

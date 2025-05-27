@@ -1,6 +1,8 @@
+using Microsoft.EntityFrameworkCore;
 using OGRALAB.Data;
 using OGRALAB.Models;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace OGRALAB.Services
@@ -61,8 +63,20 @@ namespace OGRALAB.Services
             {
                 if (_currentUser != null && _currentUser.UserId == userId)
                 {
+                    // Find the last login record to update logout time
+                    var lastLoginLog = await _context.LoginLogs
+                        .Where(l => l.UserId == userId && l.ActionType == "Login" && l.LogoutTime == null)
+                        .OrderByDescending(l => l.ActionDate)
+                        .FirstOrDefaultAsync();
+
+                    if (lastLoginLog != null)
+                    {
+                        lastLoginLog.LogoutTime = DateTime.Now;
+                        lastLoginLog.SessionDuration = lastLoginLog.LogoutTime - lastLoginLog.ActionDate;
+                    }
+
                     // Log logout
-                    var loginLog = new LoginLog
+                    var logoutLog = new LoginLog
                     {
                         UserId = userId,
                         Username = _currentUser.Username,
@@ -72,7 +86,7 @@ namespace OGRALAB.Services
                         IsSuccessful = true
                     };
 
-                    _context.LoginLogs.Add(loginLog);
+                    _context.LoginLogs.Add(logoutLog);
                     await _context.SaveChangesAsync();
 
                     _currentUser = null;
