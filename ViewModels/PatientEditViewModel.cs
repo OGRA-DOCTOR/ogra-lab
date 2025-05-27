@@ -422,12 +422,40 @@ namespace OGRALAB.ViewModels
 
         private bool ValidateForm()
         {
+            // Security validation first
+            if (!SecurityHelper.IsSafeInput(PatientName))
+            {
+                ErrorMessage = "اسم المريض يحتوي على رموز غير مسموحة";
+                return false;
+            }
+
+            if (!SecurityHelper.IsSafeInput(DoctorName))
+            {
+                ErrorMessage = "اسم الطبيب يحتوي على رموز غير مسموحة";
+                return false;
+            }
+
+            // Required field validation
             if (string.IsNullOrWhiteSpace(PatientName))
             {
                 ErrorMessage = "اسم المريض مطلوب";
                 return false;
             }
 
+            // Name format validation
+            if (!ValidationHelper.IsValidName(PatientName))
+            {
+                ErrorMessage = "اسم المريض يجب أن يحتوي على أحرف عربية أو إنجليزية فقط";
+                return false;
+            }
+
+            if (!string.IsNullOrWhiteSpace(DoctorName) && !ValidationHelper.IsValidName(DoctorName))
+            {
+                ErrorMessage = "اسم الطبيب يجب أن يحتوي على أحرف عربية أو إنجليزية فقط";
+                return false;
+            }
+
+            // Age validation
             if (Age <= 0)
             {
                 ErrorMessage = "السن يجب أن يكون أكبر من صفر";
