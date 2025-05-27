@@ -94,6 +94,10 @@ namespace OGRALAB
             services.AddTransient<UserManagementViewModel>();
             services.AddTransient<PatientEditViewModel>();
             services.AddTransient<PatientListViewModel>();
+            services.AddTransient<TestResultEntryViewModel>();
+            services.AddTransient<SearchEditViewModel>();
+            services.AddTransient<ResultEntryControlViewModel>();
+            services.AddTransient<TestTypesManagementViewModel>();
         }
 
         protected override void OnExit(ExitEventArgs e)

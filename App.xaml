@@ -17,6 +17,11 @@
         <local:NavigationItemConverter x:Key="NavigationItemConverter"/>
         <local:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
         <local:RadioButtonConverter x:Key="RadioButtonConverter"/>
+        <local:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter"/>
+        <local:InverseNullToVisibilityConverter x:Key="InverseNullToVisibilityConverter"/>
+        <local:CountToVisibilityConverter x:Key="CountToVisibilityConverter"/>
+        <local:StatusToColorConverter x:Key="StatusToColorConverter"/>
+        <local:StatusToTextConverter x:Key="StatusToTextConverter"/>
         
         <!-- Global Styles -->
         <Style TargetType="Button">

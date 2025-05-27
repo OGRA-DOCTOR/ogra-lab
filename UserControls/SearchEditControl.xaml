@@ -1,110 +1,355 @@
 <UserControl x:Class="OGRALAB.UserControls.SearchEditControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:OGRALAB.Helpers"
              FlowDirection="RightToLeft"
              FontFamily="Cairo, Segoe UI">
-    
+     
     <UserControl.Resources>
         <!-- Color Resources -->
         <SolidColorBrush x:Key="PrimaryDark" Color="#1e3a8a"/>
         <SolidColorBrush x:Key="AccentOrange" Color="#f59e0b"/>
         <SolidColorBrush x:Key="AccentGreen" Color="#10b981"/>
         <SolidColorBrush x:Key="LightGray" Color="#f8fafc"/>
+        <SolidColorBrush x:Key="MediumGray" Color="#64748b"/>
         <SolidColorBrush x:Key="DarkText" Color="#1e293b"/>
+        <SolidColorBrush x:Key="CardBackground" Color="White"/>
+
+        <!-- Button Styles -->
+        <Style x:Key="PrimaryButton" TargetType="Button">
+            <Setter Property="Background" Value="{StaticResource AccentOrange}"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="12,6"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                                CornerRadius="6"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}">
+                            <ContentPresenter HorizontalAlignment="Center" 
+                                            VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#d97706"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="#b45309"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Background" Value="#9ca3af"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="SecondaryButton" TargetType="Button" BasedOn="{StaticResource PrimaryButton}">
+            <Setter Property="Background" Value="{StaticResource AccentGreen}"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#059669"/>
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Background" Value="#047857"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="ModernTextBox" TargetType="TextBox">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Padding" Value="8,6"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="BorderBrush" Value="#e2e8f0"/>
+            <Setter Property="Background" Value="White"/>
+        </Style>
+
+        <Style x:Key="ModernComboBox" TargetType="ComboBox">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Padding" Value="8,6"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="BorderBrush" Value="#e2e8f0"/>
+            <Setter Property="Background" Value="White"/>
+        </Style>
     </UserControl.Resources>
-    
-    <Grid Background="{StaticResource LightGray}">
-        <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="20">
-            <StackPanel>
-                <!-- Header -->
-                <Border Background="{StaticResource PrimaryDark}" CornerRadius="8" Padding="20" Margin="0,0,0,20">
-                    <StackPanel Orientation="Horizontal">
-                        <Ellipse Width="50" Height="50" Fill="{StaticResource AccentOrange}" Margin="0,0,15,0"/>
-                        <StackPanel>
-                            <TextBlock Text="البحث والتعديل" FontSize="24" FontWeight="Bold" Foreground="White"/>
-                            <TextBlock Text="البحث عن المرضى وتعديل بياناتهم" FontSize="14" Foreground="#cbd5e1"/>
-                        </StackPanel>
-                    </StackPanel>
-                </Border>
+     
+    <Grid Background="{StaticResource LightGray}" Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
 
-                <!-- Search Section -->
-                <Border Background="White" CornerRadius="8" Padding="20" Margin="0,0,0,20">
-                    <Border.Effect>
-                        <DropShadowEffect Color="Black" Opacity="0.1" ShadowDepth="2" BlurRadius="8"/>
-                    </Border.Effect>
-                    
-                    <StackPanel>
-                        <TextBlock Text="البحث السريع" FontSize="18" FontWeight="Bold" 
-                                 Foreground="{StaticResource DarkText}" Margin="0,0,0,15"/>
-                        
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-                            
-                            <TextBox Grid.Column="0" 
-                                   FontSize="16" 
-                                   Padding="12,10" 
-                                   BorderThickness="2"
-                                   BorderBrush="#e2e8f0"
-                                   Background="White"
-                                   Text="ادخل اسم المريض، رقم الهوية، أو رقم الهاتف"/>
-                            
-                            <Button Grid.Column="1" 
-                                   Content="🔍 بحث" 
-                                   Background="{StaticResource AccentGreen}"
-                                   Foreground="White"
-                                   BorderThickness="0"
-                                   Padding="20,10"
-                                   Margin="10,0,0,0"
-                                   FontSize="16"
-                                   FontWeight="SemiBold"
-                                   Cursor="Hand"/>
-                        </Grid>
-                        
-                        <!-- Search Filters -->
-                        <StackPanel Orientation="Horizontal" Margin="0,15,0,0">
-                            <CheckBox Content="البحث بالاسم" IsChecked="True" Margin="0,0,20,0"/>
-                            <CheckBox Content="البحث برقم الهوية" IsChecked="True" Margin="0,0,20,0"/>
-                            <CheckBox Content="البحث برقم الهاتف" IsChecked="True"/>
-                        </StackPanel>
-                    </StackPanel>
-                </Border>
-
-                <!-- Results Section -->
-                <Border Background="White" CornerRadius="8" Padding="20">
-                    <Border.Effect>
-                        <DropShadowEffect Color="Black" Opacity="0.1" ShadowDepth="2" BlurRadius="8"/>
-                    </Border.Effect>
-                    
-                    <StackPanel>
-                        <TextBlock Text="نتائج البحث" FontSize="18" FontWeight="Bold" 
-                                 Foreground="{StaticResource DarkText}" Margin="0,0,0,15"/>
-                        
-                        <!-- Placeholder for search results -->
-                        <Border Background="#f0f9ff" CornerRadius="6" Padding="40" MinHeight="200">
-                            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                                <TextBlock Text="🔍" FontSize="48" HorizontalAlignment="Center" Margin="0,0,0,10"/>
-                                <TextBlock Text="ابدأ البحث لعرض النتائج" FontSize="16" 
-                                         HorizontalAlignment="Center" Foreground="#64748b"/>
-                            </StackPanel>
-                        </Border>
-                        
-                        <!-- Coming Soon Message -->
-                        <Border Background="#fff3cd" CornerRadius="6" Padding="15" Margin="0,20,0,0">
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="⚠️" FontSize="20" Margin="0,0,10,0"/>
-                                <StackPanel>
-                                    <TextBlock Text="قيد التطوير" FontWeight="Bold" Foreground="#856404"/>
-                                    <TextBlock Text="سيتم تنفيذ وظائف البحث والتعديل الكاملة في التحديث القادم" 
-                                             FontSize="12" Foreground="#856404"/>
-                                </StackPanel>
-                            </StackPanel>
-                        </Border>
-                    </StackPanel>
-                </Border>
+        <!-- Header -->
+        <Border Grid.Row="0" Background="{StaticResource PrimaryDark}" CornerRadius="8,8,0,0" Padding="20,15">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="🔍" FontSize="24" Margin="0,0,10,0"/>
+                <StackPanel>
+                    <TextBlock Text="البحث والتعديل" FontSize="20" FontWeight="Bold" Foreground="White"/>
+                    <TextBlock Text="البحث عن المرضى وتعديل بياناتهم ونتائجهم" FontSize="14" Foreground="#cbd5e1"/>
+                </StackPanel>
             </StackPanel>
-        </ScrollViewer>
+        </Border>
+
+        <!-- Search Section -->
+        <Border Grid.Row="1" Background="{StaticResource CardBackground}" Padding="20" BorderBrush="#e2e8f0" BorderThickness="1,0,1,0">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- Main Search -->
+                <Grid Grid.Row="0" Margin="0,0,0,15">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="120"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <TextBox Grid.Column="0" 
+                           Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                           Style="{StaticResource ModernTextBox}"
+                           Tag="البحث عن مريض..."
+                           KeyDown="SearchTextBox_KeyDown"/>
+                    
+                    <ComboBox Grid.Column="1" 
+                            ItemsSource="{Binding SearchTypes}"
+                            SelectedItem="{Binding SearchType}"
+                            Style="{StaticResource ModernComboBox}"
+                            Margin="5,0"/>
+                    
+                    <Button Grid.Column="2" 
+                           Content="🔍 بحث" 
+                           Style="{StaticResource SecondaryButton}"
+                           Command="{Binding SearchCommand}"/>
+                    
+                    <Button Grid.Column="3" 
+                           Content="🔄 تحديث" 
+                           Style="{StaticResource PrimaryButton}"
+                           Command="{Binding RefreshCommand}"/>
+                    
+                    <Button Grid.Column="4" 
+                           Content="🗑️ مسح" 
+                           Style="{StaticResource PrimaryButton}"
+                           Background="#dc2626"
+                           Command="{Binding ClearSearchCommand}"/>
+                </Grid>
+
+                <!-- Advanced Filters -->
+                <Grid Grid.Row="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="150"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="150"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <TextBlock Grid.Column="0" Text="من تاريخ:" VerticalAlignment="Center" FontWeight="SemiBold" Margin="0,0,5,0"/>
+                    <DatePicker Grid.Column="1" SelectedDate="{Binding SearchDateFrom}" Margin="0,0,15,0"/>
+                    
+                    <TextBlock Grid.Column="2" Text="إلى تاريخ:" VerticalAlignment="Center" FontWeight="SemiBold" Margin="0,0,5,0"/>
+                    <DatePicker Grid.Column="3" SelectedDate="{Binding SearchDateTo}" Margin="0,0,15,0"/>
+                    
+                    <TextBlock Grid.Column="4" Text="جهة التحويل:" VerticalAlignment="Center" FontWeight="SemiBold" Margin="0,0,5,0"/>
+                    <TextBox Grid.Column="5" 
+                           Text="{Binding ReferralSource, UpdateSourceTrigger=PropertyChanged}"
+                           Style="{StaticResource ModernTextBox}"/>
+                </Grid>
+            </Grid>
+        </Border>
+
+        <!-- Results Section -->
+        <Grid Grid.Row="2" Margin="0,15,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="15"/>
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Patients List -->
+            <Border Grid.Column="0" Background="{StaticResource CardBackground}" CornerRadius="8" Padding="20">
+                <Border.Effect>
+                    <DropShadowEffect Color="Black" Opacity="0.1" ShadowDepth="2" BlurRadius="8"/>
+                </Border.Effect>
+                
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Header -->
+                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,15">
+                        <TextBlock Text="نتائج البحث" FontSize="16" FontWeight="Bold" Foreground="{StaticResource DarkText}"/>
+                        <Border Background="{StaticResource AccentGreen}" CornerRadius="12" 
+                               Padding="6,2" Margin="10,0,0,0">
+                            <TextBlock Text="{Binding SearchResultsCount}" FontSize="12" 
+                                     FontWeight="SemiBold" Foreground="White"/>
+                        </Border>
+                    </StackPanel>
+
+                    <!-- Patients DataGrid -->
+                    <DataGrid Grid.Row="1" 
+                            ItemsSource="{Binding SearchResults}"
+                            SelectedItem="{Binding SelectedPatient}"
+                            AutoGenerateColumns="False"
+                            IsReadOnly="True"
+                            GridLinesVisibility="Horizontal"
+                            HeadersVisibility="Column"
+                            CanUserAddRows="False"
+                            CanUserDeleteRows="False"
+                            SelectionMode="Single"
+                            FontSize="12">
+                        
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="اسم المريض" Binding="{Binding FullName}" Width="*"/>
+                            <DataGridTextColumn Header="رقم المريض" Binding="{Binding PatientNumber}" Width="100"/>
+                            <DataGridTextColumn Header="تاريخ التسجيل" Binding="{Binding CreatedDate, StringFormat=dd/MM/yyyy}" Width="80"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <!-- Action Buttons -->
+                    <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,15,0,0">
+                        <Button Content="✏️ تعديل" 
+                               Style="{StaticResource SecondaryButton}"
+                               Command="{Binding EditPatientCommand}"
+                               Visibility="{Binding CanEditPatients, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                        
+                        <Button Content="👁️ عرض التاريخ" 
+                               Style="{StaticResource PrimaryButton}"
+                               Command="{Binding ViewPatientHistoryCommand}"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- Patient Tests -->
+            <Border Grid.Column="2" Background="{StaticResource CardBackground}" CornerRadius="8" Padding="20">
+                <Border.Effect>
+                    <DropShadowEffect Color="Black" Opacity="0.1" ShadowDepth="2" BlurRadius="8"/>
+                </Border.Effect>
+                
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Header -->
+                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,15">
+                        <TextBlock Text="تحاليل المريض" FontSize="16" FontWeight="Bold" Foreground="{StaticResource DarkText}"/>
+                        <Border Background="{StaticResource AccentOrange}" CornerRadius="12" 
+                               Padding="6,2" Margin="10,0,0,0">
+                            <TextBlock Text="{Binding PatientTestsCount}" FontSize="12" 
+                                     FontWeight="SemiBold" Foreground="White"/>
+                        </Border>
+                    </StackPanel>
+
+                    <!-- Tests List -->
+                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                        <ItemsControl ItemsSource="{Binding PatientTests}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Background="#f8fafc" CornerRadius="6" Padding="12" Margin="0,0,0,8"
+                                           MouseLeftButtonUp="TestItem_MouseLeftButtonUp"
+                                           Cursor="Hand"
+                                           Tag="{Binding}">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            
+                                            <StackPanel Grid.Column="0">
+                                                <TextBlock Text="{Binding TestType.TestName}" FontWeight="SemiBold"/>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="طُلب في: " FontSize="11" Foreground="{StaticResource MediumGray}"/>
+                                                    <TextBlock Text="{Binding OrderDate, StringFormat=dd/MM/yyyy}" 
+                                                             FontSize="11" Foreground="{StaticResource MediumGray}"/>
+                                                </StackPanel>
+                                            </StackPanel>
+                                            
+                                            <Border Grid.Column="1" CornerRadius="12" Padding="6,2" Margin="5,0,5,0">
+                                                <Border.Style>
+                                                    <Style TargetType="Border">
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding Status}" Value="Pending">
+                                                                <Setter Property="Background" Value="#fbbf24"/>
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding Status}" Value="InProgress">
+                                                                <Setter Property="Background" Value="#3b82f6"/>
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding Status}" Value="Completed">
+                                                                <Setter Property="Background" Value="{StaticResource AccentGreen}"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Border.Style>
+                                                <TextBlock Text="{Binding Status}" FontSize="10" 
+                                                         FontWeight="SemiBold" Foreground="White"/>
+                                            </Border>
+                                            
+                                            <Button Grid.Column="2" 
+                                                   Content="✏️" 
+                                                   Background="Transparent"
+                                                   BorderThickness="0"
+                                                   FontSize="16"
+                                                   Cursor="Hand"
+                                                   Click="EditTestResult_Click"
+                                                   Tag="{Binding}"
+                                                   Visibility="{Binding DataContext.CanEditResults, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+
+                    <!-- No Patient Selected Message -->
+                    <Border Grid.Row="1" Background="#f0f9ff" CornerRadius="6" Padding="20" 
+                           Visibility="{Binding SelectedPatient, Converter={StaticResource InverseNullToVisibilityConverter}}">
+                        <StackPanel HorizontalAlignment="Center">
+                            <TextBlock Text="👤" FontSize="48" HorizontalAlignment="Center" Margin="0,0,0,10"/>
+                            <TextBlock Text="لم يتم اختيار مريض" FontSize="16" FontWeight="SemiBold" 
+                                     HorizontalAlignment="Center" Foreground="{StaticResource DarkText}"/>
+                            <TextBlock Text="اختر مريضاً من القائمة لعرض تحاليله" 
+                                     FontSize="14" HorizontalAlignment="Center" 
+                                     Foreground="{StaticResource MediumGray}" Margin="0,5,0,0"/>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </Border>
+        </Grid>
+
+        <!-- Loading Overlay -->
+        <Grid Grid.RowSpan="3" 
+             Background="#80000000" 
+             Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibilityConverter}}">
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                <ProgressBar IsIndeterminate="True" 
+                           Width="200" 
+                           Height="4" 
+                           Background="Transparent" 
+                           Foreground="{StaticResource AccentOrange}"/>
+                <TextBlock Text="جاري البحث..." 
+                         Foreground="White" 
+                         FontSize="16" 
+                         Margin="0,15,0,0"
+                         HorizontalAlignment="Center"/>
+            </StackPanel>
+        </Grid>
     </Grid>
 </UserControl>

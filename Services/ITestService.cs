@@ -27,6 +27,7 @@ namespace OGRALAB.Services
 
         // Patient Tests Management
         Task<IEnumerable<PatientTest>> GetAllPatientTestsAsync();
+        Task<IEnumerable<PatientTest>> GetPatientTestsAsync(int patientId);
         Task<PatientTest?> GetPatientTestByIdAsync(int patientTestId);
         Task<PatientTest?> GetPatientTestByOrderNumberAsync(string orderNumber);
         Task<IEnumerable<PatientTest>> GetPatientTestsByPatientIdAsync(int patientId);
@@ -38,6 +39,7 @@ namespace OGRALAB.Services
         Task<string> GenerateOrderNumberAsync();
 
         // Test Results Management
+        Task<IEnumerable<TestResult>> GetAllTestResultsAsync();
         Task<IEnumerable<TestResult>> GetTestResultsByPatientTestIdAsync(int patientTestId);
         Task<TestResult?> GetTestResultByIdAsync(int testResultId);
         Task<TestResult> CreateTestResultAsync(TestResult testResult);

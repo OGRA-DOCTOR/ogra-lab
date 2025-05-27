@@ -252,6 +252,16 @@ namespace OGRALAB.Services
                 .ToListAsync();
         }
 
+        public async Task<IEnumerable<PatientTest>> GetPatientTestsAsync(int patientId)
+        {
+            return await _context.PatientTests
+                .Include(pt => pt.TestType)
+                .Include(pt => pt.TestResults)
+                .Where(pt => pt.PatientId == patientId)
+                .OrderByDescending(pt => pt.OrderDate)
+                .ToListAsync();
+        }
+
         public async Task<PatientTest?> GetPatientTestByIdAsync(int patientTestId)
         {
             return await _context.PatientTests
@@ -396,6 +406,18 @@ namespace OGRALAB.Services
         }
 
         // Test Results Management
+        public async Task<IEnumerable<TestResult>> GetAllTestResultsAsync()
+        {
+            return await _context.TestResults
+                .Include(tr => tr.PatientTest)
+                .ThenInclude(pt => pt.Patient)
+                .Include(tr => tr.PatientTest)
+                .ThenInclude(pt => pt.TestType)
+                .Include(tr => tr.TestType)
+                .OrderByDescending(tr => tr.EnteredDate)
+                .ToListAsync();
+        }
+
         public async Task<IEnumerable<TestResult>> GetTestResultsByPatientTestIdAsync(int patientTestId)
         {
             return await _context.TestResults
