@@ -1,8 +1,6 @@
 using System;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -299,7 +297,7 @@ namespace OGRALAB.ViewModels
 
                     case "Patients":
                         LoadingMessage = "جاري إنشاء المرضى التجريبيين...";
-                        success = await _testDataService.CreateSamplePatientsAsync(50);
+                        success = await _testDataService.CreateSamplePatientsAsync(Constants.DefaultPageSize);
                         break;
 
                     case "PatientTests":
@@ -559,8 +557,8 @@ namespace OGRALAB.ViewModels
 
             Messages.Insert(0, statusMessage); // Add to top
             
-            // Keep only last 50 messages
-            while (Messages.Count > 50)
+            // Keep only last Constants.DefaultPageSize messages
+            while (Messages.Count > Constants.DefaultPageSize)
             {
                 Messages.RemoveAt(Messages.Count - 1);
             }

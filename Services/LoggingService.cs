@@ -1,5 +1,5 @@
 using System;
-using System.IO;
+using OGRALAB.Helpers;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -218,7 +218,7 @@ namespace OGRALAB.Services
                     Timestamp = logEntry.Timestamp,
                     Level = logEntry.Level,
                     Category = logEntry.Category,
-                    Message = logEntry.Message.Length > 1000 ? logEntry.Message.Substring(0, 1000) : logEntry.Message,
+                    Message = logEntry.Message.Length > Constants.MaxRecordsPerQuery ? logEntry.Message.Substring(0, Constants.MaxRecordsPerQuery) : logEntry.Message,
                     Username = logEntry.Username,
                     MachineName = logEntry.MachineName
                 };
@@ -268,15 +268,16 @@ namespace OGRALAB.Services
                     query = query.Where(l => l.Username == username);
 
                 var logs = await query.OrderByDescending(l => l.Timestamp)
-                                    .Take(1000) // Limit for performance
+                                    .Take(Constants.MaxRecordsPerQuery) // Limit for performance
                                     .ToListAsync();
 
                 var result = new StringBuilder();
                 result.AppendLine("سجل أحداث النظام - OGRA LAB");
                 result.AppendLine($"تاريخ التصدير: {DateTime.Now:yyyy-MM-dd HH:mm:ss}");
-                result.AppendLine(new string('=', 80));
+                result.AppendLine(new string('=', Constants.HighCompletionThreshold));
 
-                foreach (var log in logs)
+                // TODO: Consider using batch operations to avoid N+1 queries
+            foreach (var log in logs)
                 {
                     result.AppendLine($"[{log.Timestamp:yyyy-MM-dd HH:mm:ss}] [{log.Level}] [{log.Category}] " +
                                     $"{(string.IsNullOrEmpty(log.Username) ? "" : $"[{log.Username}] ")}" +
@@ -305,7 +306,8 @@ namespace OGRALAB.Services
 
                 // Also clean up old log files
                 var logFiles = Directory.GetFiles(_logDirectory, "*.log");
-                foreach (var file in logFiles)
+                // TODO: Consider using batch operations to avoid N+1 queries
+            foreach (var file in logFiles)
                 {
                     var fileInfo = new FileInfo(file);
                     if (fileInfo.CreationTime < beforeDate)
@@ -353,11 +355,12 @@ namespace OGRALAB.Services
                 
                 // Calculate database logs size (approximate)
                 var dbLogsCount = await _context.SystemLogs.CountAsync();
-                totalSize += dbLogsCount * 500; // Approximate 500 bytes per log entry
+                totalSize += dbLogsCount * Constants.MaxPageSize; // Approximate Constants.MaxPageSize bytes per log entry
 
                 // Calculate file logs size
                 var logFiles = Directory.GetFiles(_logDirectory, "*.log");
-                foreach (var file in logFiles)
+                // TODO: Consider using batch operations to avoid N+1 queries
+            foreach (var file in logFiles)
                 {
                     var fileInfo = new FileInfo(file);
                     totalSize += fileInfo.Length;
@@ -371,7 +374,7 @@ namespace OGRALAB.Services
             }
         }
 
-        public async Task<bool> CompressOldLogsAsync(int daysOld = 30)
+        public async Task<bool> CompressOldLogsAsync(int daysOld = Constants.DatabaseTimeoutSeconds)
         {
             try
             {

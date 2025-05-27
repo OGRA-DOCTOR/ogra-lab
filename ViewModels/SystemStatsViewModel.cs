@@ -1,12 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
-using Microsoft.Win32;
 using OGRALAB.Services;
 using OGRALAB.Helpers;
 
@@ -26,7 +23,7 @@ namespace OGRALAB.ViewModels
         private Dictionary<string, int> _monthlyTestsStats;
 
         // Date range for filtering
-        private DateTime _fromDate = DateTime.Today.AddDays(-30);
+        private DateTime _fromDate = DateTime.Today.AddDays(-Constants.DatabaseTimeoutSeconds);
         private DateTime _toDate = DateTime.Today;
 
         public SystemStatsViewModel(IStatsService statsService, IAuthenticationService authenticationService)
@@ -102,7 +99,7 @@ namespace OGRALAB.ViewModels
             get
             {
                 if (TotalTests == 0) return "0%";
-                var rate = (CompletedTests * 100.0) / TotalTests;
+                var rate = (CompletedTests * Constants.CompletePercentage.0) / TotalTests;
                 return $"{rate:F1}%";
             }
         }
@@ -112,7 +109,7 @@ namespace OGRALAB.ViewModels
             get
             {
                 if (TodayTests == 0) return "0%";
-                var rate = (TodayCompleted * 100.0) / TodayTests;
+                var rate = (TodayCompleted * Constants.CompletePercentage.0) / TodayTests;
                 return $"{rate:F1}%";
             }
         }
@@ -124,10 +121,10 @@ namespace OGRALAB.ViewModels
                 if (AvgProcessingTime <= 0) return "غير متوفر";
                 if (AvgProcessingTime < 1)
                     return $"{AvgProcessingTime * 60:F0} دقيقة";
-                else if (AvgProcessingTime < 24)
+                else if (AvgProcessingTime < Constants.AutoBackupIntervalHours)
                     return $"{AvgProcessingTime:F1} ساعة";
                 else
-                    return $"{AvgProcessingTime / 24:F1} يوم";
+                    return $"{AvgProcessingTime / Constants.AutoBackupIntervalHours:F1} يوم";
             }
         }
 
@@ -141,7 +138,7 @@ namespace OGRALAB.ViewModels
                 var diff = DateTime.Now - LastBackupDate;
                 if (diff.TotalDays > 7)
                     return $"منذ {diff.TotalDays:F0} يوم";
-                else if (diff.TotalHours > 24)
+                else if (diff.TotalHours > Constants.AutoBackupIntervalHours)
                     return $"منذ {diff.TotalDays:F0} يوم";
                 else if (diff.TotalHours > 1)
                     return $"منذ {diff.TotalHours:F0} ساعة";

@@ -1,6 +1,5 @@
 using System;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+using OGRALAB.Helpers;
 
 namespace OGRALAB.Models
 {
@@ -29,10 +28,10 @@ namespace OGRALAB.Models
         [StringLength(20)]
         public string Status { get; set; } = "Ordered"; // Ordered, SampleCollected, InProgress, Completed, Cancelled
 
-        [StringLength(50)]
+        [StringLength(Constants.DefaultPageSize)]
         public string? SampleType { get; set; } // نوع العينة (دم، بول، إلخ)
 
-        [StringLength(100)]
+        [StringLength(Constants.CompletePercentage)]
         public string? OrderedBy { get; set; } // الطبيب أو الجهة الطالبة
 
         [Column(TypeName = "decimal(18,2)")]
@@ -52,10 +51,10 @@ namespace OGRALAB.Models
 
         public bool IsEmergency { get; set; } = false;
 
-        [StringLength(500)]
+        [StringLength(Constants.MaxPageSize)]
         public string? Notes { get; set; }
 
-        [StringLength(500)]
+        [StringLength(Constants.MaxPageSize)]
         public string? CancellationReason { get; set; }
 
         public DateTime? CancellationDate { get; set; }

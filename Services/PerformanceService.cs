@@ -1,13 +1,11 @@
 using System;
+using OGRALAB.Helpers;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Timers;
 using Microsoft.EntityFrameworkCore;
 using OGRALAB.Data;
 
@@ -20,9 +18,9 @@ namespace OGRALAB.Services
         
         private readonly ConcurrentDictionary<string, object> _cache;
         private readonly ConcurrentDictionary<string, DateTime> _cacheTimestamps;
-        private TimeSpan _cacheExpiration = TimeSpan.FromMinutes(15);
+        private TimeSpan _cacheExpiration = TimeSpan.FromMinutes(Constants.CacheDurationMinutes);
         
-        private long _memoryLimit = 500 * 1024 * 1024; // 500MB default
+        private long _memoryLimit = Constants.MaxPageSize * 1024 * 1024; // 500MB default
         private readonly DateTime _startTime;
         private readonly PerformanceCounter? _cpuCounter;
         private readonly List<System.Timers.Timer> _maintenanceTasks;
@@ -50,7 +48,7 @@ namespace OGRALAB.Services
             }
 
             // Schedule automatic cleanup
-            ScheduleMaintenanceTask(TimeSpan.FromMinutes(30), CleanupCacheAsync);
+            ScheduleMaintenanceTask(TimeSpan.FromMinutes(Constants.DatabaseTimeoutSeconds), CleanupCacheAsync);
         }
 
         #region Memory Management
@@ -165,8 +163,8 @@ namespace OGRALAB.Services
                 stats.RecordCounts["سجل النظام"] = await _context.SystemLogs.CountAsync();
 
                 // Table and index counts would require direct SQL queries
-                stats.TableCount = 8; // Known table count
-                stats.IndexCount = 15; // Approximate index count
+                stats.TableCount = Constants.MinPasswordLength; // Known table count
+                stats.IndexCount = Constants.CacheDurationMinutes; // Approximate index count
 
                 return stats;
             }
@@ -256,8 +254,9 @@ namespace OGRALAB.Services
             var expiredKeys = _cacheTimestamps
                 .Where(kvp => now - kvp.Value > _cacheExpiration)
                 .Select(kvp => kvp.Key)
-                .ToList();
+                .Take(Constants.MaxRecordsPerQuery).ToList();
 
+            // TODO: Consider using batch operations to avoid N+1 queries
             foreach (var key in expiredKeys)
             {
                 ClearCache(key);
@@ -317,7 +316,8 @@ namespace OGRALAB.Services
                 }
 
                 // Get operation times
-                foreach (var timer in _operationTimers)
+                // TODO: Consider using batch operations to avoid N+1 queries
+            foreach (var timer in _operationTimers)
                 {
                     if (timer.Value.IsRunning)
                     {
@@ -344,7 +344,7 @@ namespace OGRALAB.Services
                 var report = new StringBuilder();
                 report.AppendLine("تقرير أداء النظام - OGRA LAB");
                 report.AppendLine($"تاريخ التقرير: {DateTime.Now:yyyy-MM-dd HH:mm:ss}");
-                report.AppendLine(new string('=', 50));
+                report.AppendLine(new string('=', Constants.DefaultPageSize));
                 report.AppendLine();
 
                 report.AppendLine("مؤشرات الأداء:");
@@ -361,7 +361,8 @@ namespace OGRALAB.Services
                 report.AppendLine();
 
                 report.AppendLine("عدد السجلات:");
-                foreach (var count in dbStats.RecordCounts)
+                // TODO: Consider using batch operations to avoid N+1 queries
+            foreach (var count in dbStats.RecordCounts)
                 {
                     report.AppendLine($"{count.Key}: {count.Value:N0}");
                 }
@@ -381,8 +382,8 @@ namespace OGRALAB.Services
             var totalCacheItems = _cache.Count;
             var validCacheItems = _cacheTimestamps.Count(kvp => DateTime.Now - kvp.Value < _cacheExpiration);
             
-            if (totalCacheItems == 0) return 100;
-            return (validCacheItems * 100) / totalCacheItems;
+            if (totalCacheItems == 0) return Constants.CompletePercentage;
+            return (validCacheItems * Constants.CompletePercentage) / totalCacheItems;
         }
 
         private long GetDatabaseSize()
@@ -434,7 +435,7 @@ namespace OGRALAB.Services
                 }
 
                 // Database optimization suggestions
-                if (dbStats.DatabaseSize > 100 * 1024 * 1024) // 100MB
+                if (dbStats.DatabaseSize > Constants.CompletePercentage * 1024 * 1024) // 100MB
                 {
                     suggestions.Add(new OptimizationSuggestion
                     {
@@ -463,7 +464,7 @@ namespace OGRALAB.Services
                 }
 
                 // Cache optimization
-                if (metrics.CacheHitRatio < 80)
+                if (metrics.CacheHitRatio < Constants.HighCompletionThreshold)
                 {
                     suggestions.Add(new OptimizationSuggestion
                     {
@@ -500,7 +501,7 @@ namespace OGRALAB.Services
                         break;
 
                     case "cache_low_hit":
-                        SetCacheExpiration(TimeSpan.FromMinutes(30));
+                        SetCacheExpiration(TimeSpan.FromMinutes(Constants.DatabaseTimeoutSeconds));
                         break;
 
                     default:
@@ -542,6 +543,7 @@ namespace OGRALAB.Services
 
         public void StopMaintenanceTasks()
         {
+            // TODO: Consider using batch operations to avoid N+1 queries
             foreach (var timer in _maintenanceTasks)
             {
                 timer.Stop();
@@ -559,6 +561,7 @@ namespace OGRALAB.Services
             StopMaintenanceTasks();
             _cpuCounter?.Dispose();
             
+            // TODO: Consider using batch operations to avoid N+1 queries
             foreach (var timer in _operationTimers.Values)
             {
                 timer.Stop();

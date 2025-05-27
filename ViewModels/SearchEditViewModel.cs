@@ -1,8 +1,6 @@
 using System;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -363,7 +361,7 @@ namespace OGRALAB.ViewModels
             {
                 IsLoading = true;
                 var patients = await _patientService.GetAllPatientsAsync();
-                var recentPatients = patients.OrderByDescending(p => p.CreatedDate).Take(10);
+                var recentPatients = patients.OrderByDescending(p => p.CreatedDate).Take(Constants.MaxConcurrentOperations);
                 
                 SearchResults.Clear();
                 foreach (var patient in recentPatients)

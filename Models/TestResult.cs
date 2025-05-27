@@ -1,6 +1,5 @@
 using System;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+using OGRALAB.Helpers;
 
 namespace OGRALAB.Models
 {
@@ -15,18 +14,19 @@ namespace OGRALAB.Models
         [Required]
         public int TestTypeId { get; set; }
 
-        [StringLength(50)]
+        [StringLength(Constants.DefaultPageSize)]
+        // TODO: This method is 62 lines long. Consider breaking it into smaller methods.
         public string? ParameterName { get; set; } // اسم المعامل (في حالة التحاليل المتعددة المعاملات)
 
-        [StringLength(100)]
+        [StringLength(Constants.CompletePercentage)]
         public string? ResultValue { get; set; } // قيمة النتيجة
 
         public decimal? NumericValue { get; set; } // القيمة الرقمية للنتيجة
 
-        [StringLength(50)]
+        [StringLength(Constants.DefaultPageSize)]
         public string? Unit { get; set; } // وحدة القياس
 
-        [StringLength(200)]
+        [StringLength(Constants.MaxPatientNameLength)]
         public string? ReferenceRange { get; set; } // النطاق المرجعي
 
         [StringLength(20)]
@@ -35,10 +35,10 @@ namespace OGRALAB.Models
         [StringLength(20)]
         public string? Flag { get; set; } // H (High), L (Low), C (Critical), * (Abnormal)
 
-        [StringLength(1000)]
+        [StringLength(Constants.MaxRecordsPerQuery)]
         public string? Comments { get; set; } // تعليقات على النتيجة
 
-        [StringLength(1000)]
+        [StringLength(Constants.MaxRecordsPerQuery)]
         public string? Interpretation { get; set; } // تفسير النتيجة
 
         public DateTime ResultDate { get; set; } = DateTime.Now;
@@ -53,15 +53,15 @@ namespace OGRALAB.Models
 
         public bool IsRepeated { get; set; } = false; // نتيجة معادة
 
-        [StringLength(500)]
+        [StringLength(Constants.MaxPageSize)]
         public string? RepeatReason { get; set; } // سبب الإعادة
 
         public int? OriginalResultId { get; set; } // ربط بالنتيجة الأصلية في حالة الإعادة
 
-        [StringLength(200)]
+        [StringLength(Constants.MaxPatientNameLength)]
         public string? MethodUsed { get; set; } // الطريقة المستخدمة في التحليل
 
-        [StringLength(100)]
+        [StringLength(Constants.CompletePercentage)]
         public string? InstrumentUsed { get; set; } // الجهاز المستخدم
 
         public DateTime CreatedDate { get; set; } = DateTime.Now;

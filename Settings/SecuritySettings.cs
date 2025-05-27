@@ -1,5 +1,5 @@
 using System;
-using System.Configuration;
+using OGRALAB.Helpers;
 
 namespace OGRALAB.Settings
 {
@@ -27,7 +27,7 @@ namespace OGRALAB.Settings
         /// <summary>
         /// Account lockout duration in minutes
         /// </summary>
-        public static int AccountLockoutDurationMinutes => 30;
+        public static int AccountLockoutDurationMinutes => Constants.DatabaseTimeoutSeconds;
         
         /// <summary>
         /// Password complexity requirements

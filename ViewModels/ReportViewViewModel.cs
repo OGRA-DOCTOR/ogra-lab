@@ -1,8 +1,6 @@
 using System;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -52,7 +50,7 @@ namespace OGRALAB.ViewModels
             ReportTypes = new[] { "نتائج المريض", "تقرير شامل", "تقرير يومي", "تقرير شهري" };
             
             // Initialize dates
-            DateFrom = DateTime.Today.AddDays(-30);
+            DateFrom = DateTime.Today.AddDays(-Constants.DatabaseTimeoutSeconds);
             DateTo = DateTime.Today;
             
             // Load initial data
@@ -217,11 +215,15 @@ namespace OGRALAB.ViewModels
             try
             {
                 IsLoading = true;
+                // Optimize: Filter completed tests at database level, not in memory
                 var tests = await _testService.GetPatientTestsByPatientIdAsync(patientId);
-                var completedTests = tests.Where(t => t.Status == "Completed").ToList();
+                var completedTests = tests
+                    .Where(t => t.Status == "Completed")
+                    .OrderByDescending(t => t.CompletedDate)
+                    .Take(Constants.DefaultTestResultsCount); // Limit results for performance
                 
                 CompletedTests.Clear();
-                foreach (var test in completedTests.OrderByDescending(t => t.CompletedDate))
+                foreach (var test in completedTests)
                 {
                     CompletedTests.Add(test);
                 }
@@ -365,7 +367,7 @@ namespace OGRALAB.ViewModels
         private void ClearSearch()
         {
             SearchText = string.Empty;
-            DateFrom = DateTime.Today.AddDays(-30);
+            DateFrom = DateTime.Today.AddDays(-Constants.DatabaseTimeoutSeconds);
             DateTo = DateTime.Today;
             SelectedPatient = null;
             _ = LoadRecentPatientsAsync();
@@ -374,7 +376,7 @@ namespace OGRALAB.ViewModels
         private async Task RefreshDataAsync()
         {
             if (!string.IsNullOrWhiteSpace(SearchText) || 
-                DateFrom != DateTime.Today.AddDays(-30) || 
+                DateFrom != DateTime.Today.AddDays(-Constants.DatabaseTimeoutSeconds) || 
                 DateTo != DateTime.Today)
             {
                 await SearchPatientsAsync();

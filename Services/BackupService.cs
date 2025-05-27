@@ -1,12 +1,10 @@
 using System;
+using OGRALAB.Helpers;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Data.Sqlite;
 using OGRALAB.Data;
 using OGRALAB.Models;
 
@@ -269,10 +267,11 @@ namespace OGRALAB.Services
             try
             {
                 var allBackups = await GetAllBackupsAsync();
-                var backupsToDelete = allBackups.Skip(maxBackupsToKeep).ToList();
+                var backupsToDelete = allBackups.Skip(maxBackupsToKeep).Take(Constants.MaxRecordsPerQuery).ToList();
 
                 int deletedCount = 0;
-                foreach (var backup in backupsToDelete)
+                // TODO: Consider using batch operations to avoid N+1 queries
+            foreach (var backup in backupsToDelete)
                 {
                     if (await DeleteBackupAsync(backup.BackupId, "System"))
                     {
@@ -297,7 +296,8 @@ namespace OGRALAB.Services
                     .ToListAsync();
 
                 int deletedCount = 0;
-                foreach (var backup in corruptedBackups)
+                // TODO: Consider using batch operations to avoid N+1 queries
+            foreach (var backup in corruptedBackups)
                 {
                     if (await DeleteBackupAsync(backup.BackupId, "System"))
                     {
@@ -363,7 +363,8 @@ namespace OGRALAB.Services
                 var allBackups = await GetAllBackupsAsync();
                 bool allValid = true;
 
-                foreach (var backup in allBackups)
+                // TODO: Consider using batch operations to avoid N+1 queries
+            foreach (var backup in allBackups)
                 {
                     bool isValid = await ValidateBackupIntegrityAsync(backup.BackupId);
                     
@@ -406,7 +407,8 @@ namespace OGRALAB.Services
                 csv.AppendLine("BackupId,FileName,BackupDate,BackupType,FileSizeBytes,IsVerified,IsCorrupted,CreatedBy,Description");
                 
                 // Data
-                foreach (var backup in backups)
+                // TODO: Consider using batch operations to avoid N+1 queries
+            foreach (var backup in backups)
                 {
                     csv.AppendLine($"{backup.BackupId},{backup.FileName},{backup.BackupDate:yyyy-MM-dd HH:mm:ss},{backup.BackupType},{backup.FileSizeBytes},{backup.IsVerified},{backup.IsCorrupted},\"{backup.CreatedBy}\",\"{backup.Description}\"");
                 }
@@ -610,8 +612,6 @@ namespace OGRALAB.Services
         {
             try
             {
-                using var md5 = MD5.Create();
-                using var stream = File.OpenRead(filePath);
                 var hash = await Task.Run(() => md5.ComputeHash(stream));
                 return Convert.ToBase64String(hash);
             }
@@ -643,11 +643,9 @@ namespace OGRALAB.Services
             try
             {
                 var connectionString = $"Data Source={backupFilePath};";
-                using var connection = new SqliteConnection(connectionString);
                 await connection.OpenAsync();
                 
                 // Try to query a simple table
-                using var command = connection.CreateCommand();
                 command.CommandText = "SELECT COUNT(*) FROM sqlite_master WHERE type='table';";
                 var result = await command.ExecuteScalarAsync();
                 
@@ -671,10 +669,11 @@ namespace OGRALAB.Services
                 var backupsToDelete = allBackups
                     .OrderByDescending(b => b.BackupDate)
                     .Skip(maxBackupsToKeep)
-                    .ToList();
+                    .Take(Constants.MaxRecordsPerQuery).ToList();
 
                 int deletedCount = 0;
-                foreach (var backup in backupsToDelete)
+                // TODO: Consider using batch operations to avoid N+1 queries
+            foreach (var backup in backupsToDelete)
                 {
                     try
                     {

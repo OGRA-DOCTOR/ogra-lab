@@ -1,5 +1,6 @@
 using OGRALAB.Models;
 using System;
+using OGRALAB.Helpers;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -27,7 +28,7 @@ namespace OGRALAB.Services
         
         // Statistics
         Task<SystemStatistics> GetSystemStatisticsAsync();
-        Task<IEnumerable<TopTestTypeData>> GetTopTestTypesAsync(DateTime fromDate, DateTime toDate, int top = 10);
+        Task<IEnumerable<TopTestTypeData>> GetTopTestTypesAsync(DateTime fromDate, DateTime toDate, int top = Constants.MaxConcurrentOperations);
     }
 
     // Data Transfer Objects for Reports

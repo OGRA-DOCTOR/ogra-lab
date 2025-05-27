@@ -1,6 +1,6 @@
 using System;
+using OGRALAB.Helpers;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
@@ -122,6 +122,7 @@ namespace OGRALAB.Services
                 .ToListAsync();
 
             var result = new Dictionary<string, int>();
+            // TODO: Consider using batch operations to avoid N+1 queries
             foreach (var item in statusCounts)
             {
                 var displayStatus = item.Status switch
@@ -165,6 +166,7 @@ namespace OGRALAB.Services
                 .ToListAsync();
 
             var result = new Dictionary<string, int>();
+            // TODO: Consider using batch operations to avoid N+1 queries
             foreach (var item in userStats)
             {
                 var displayRole = item.Role switch
@@ -187,7 +189,7 @@ namespace OGRALAB.Services
                 .GroupBy(l => l.Username)
                 .Select(g => new { Username = g.Key, Count = g.Count() })
                 .OrderByDescending(x => x.Count)
-                .Take(10)
+                .Take(Constants.MaxConcurrentOperations)
                 .ToListAsync();
 
             return loginStats.ToDictionary(x => x.Username, x => x.Count);
@@ -218,7 +220,7 @@ namespace OGRALAB.Services
 
         #region Test Type Statistics
 
-        public async Task<Dictionary<string, int>> GetMostRequestedTestTypesAsync(int topCount = 10)
+        public async Task<Dictionary<string, int>> GetMostRequestedTestTypesAsync(int topCount = Constants.MaxConcurrentOperations)
         {
             var testStats = await _context.PatientTests
                 .Include(pt => pt.TestType)
@@ -239,6 +241,7 @@ namespace OGRALAB.Services
                 .ToListAsync();
 
             var result = new Dictionary<string, int>();
+            // TODO: Consider using batch operations to avoid N+1 queries
             foreach (var item in categoryStats)
             {
                 var displayCategory = item.Category switch
@@ -265,7 +268,7 @@ namespace OGRALAB.Services
                 .GroupBy(pt => pt.TestType.TestName)
                 .Select(g => new { TestName = g.Key, Count = g.Count() })
                 .OrderByDescending(x => x.Count)
-                .Take(10)
+                .Take(Constants.MaxConcurrentOperations)
                 .ToListAsync();
 
             return usageStats.ToDictionary(x => x.TestName, x => x.Count);
@@ -351,7 +354,7 @@ namespace OGRALAB.Services
             string[] monthNames = { "", "يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو",
                                    "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر" };
 
-            for (int i = 1; i <= 12; i++)
+            for (int i = 1; i <= Constants.PasswordHashRounds; i++)
             {
                 var count = monthlyStats.FirstOrDefault(x => x.Month == i)?.Count ?? 0;
                 result[monthNames[i]] = count;
@@ -372,7 +375,7 @@ namespace OGRALAB.Services
             string[] monthNames = { "", "يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو",
                                    "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر" };
 
-            for (int i = 1; i <= 12; i++)
+            for (int i = 1; i <= Constants.PasswordHashRounds; i++)
             {
                 var count = monthlyStats.FirstOrDefault(x => x.Month == i)?.Count ?? 0;
                 result[monthNames[i]] = count;
@@ -452,7 +455,7 @@ namespace OGRALAB.Services
             report.AppendLine("تقرير إحصائيات النظام");
             report.AppendLine($"من: {fromDate:yyyy-MM-dd} إلى: {toDate:yyyy-MM-dd}");
             report.AppendLine($"تاريخ التقرير: {DateTime.Now:yyyy-MM-dd HH:mm}");
-            report.AppendLine(new string('=', 50));
+            report.AppendLine(new string('=', Constants.DefaultPageSize));
             report.AppendLine();
 
             // General Statistics
@@ -474,6 +477,7 @@ namespace OGRALAB.Services
             // Status Statistics
             report.AppendLine("إحصائيات الحالات:");
             var statusStats = await GetTestsCountByAllStatusesAsync();
+            // TODO: Consider using batch operations to avoid N+1 queries
             foreach (var status in statusStats)
             {
                 report.AppendLine($"{status.Key}: {status.Value:N0}");

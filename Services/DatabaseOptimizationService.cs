@@ -1,6 +1,6 @@
 using System;
+using OGRALAB.Helpers;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -12,7 +12,7 @@ namespace OGRALAB.Services
     {
         private readonly OgraLabDbContext _context;
         private readonly ILoggingService _loggingService;
-        private int _batchSize = 1000;
+        private int _batchSize = Constants.MaxRecordsPerQuery;
         private bool _batchProcessingEnabled = true;
 
         public DatabaseOptimizationService(OgraLabDbContext context, ILoggingService loggingService)
@@ -64,7 +64,8 @@ namespace OGRALAB.Services
 
                 var slowQueries = new List<SlowQuery>();
 
-                foreach (var query in testQueries)
+                // TODO: Consider using batch operations to avoid N+1 queries
+            foreach (var query in testQueries)
                 {
                     var stopwatch = Stopwatch.StartNew();
                     
@@ -73,7 +74,7 @@ namespace OGRALAB.Services
                         await _context.Database.ExecuteSqlRawAsync($"EXPLAIN QUERY PLAN {query}");
                         stopwatch.Stop();
 
-                        if (stopwatch.ElapsedMilliseconds > 100) // Consider > 100ms as slow
+                        if (stopwatch.ElapsedMilliseconds > Constants.CompletePercentage) // Consider > 100ms as slow
                         {
                             slowQueries.Add(new SlowQuery
                             {
@@ -117,12 +118,12 @@ namespace OGRALAB.Services
                 var patientCount = await _context.Patients.CountAsync();
                 var testCount = await _context.PatientTests.CountAsync();
 
-                if (patientCount > 1000 || testCount > 5000)
+                if (patientCount > Constants.MaxRecordsPerQuery || testCount > 5000)
                 {
                     slowQueries.Add(new SlowQuery
                     {
                         QueryText = "Large table scans detected",
-                        ExecutionTime = TimeSpan.FromMilliseconds(500),
+                        ExecutionTime = TimeSpan.FromMilliseconds(Constants.MaxPageSize),
                         Recommendations = "Consider adding indexes for frequently queried columns"
                     });
                 }
@@ -160,7 +161,8 @@ namespace OGRALAB.Services
                     "CREATE INDEX IF NOT EXISTS IX_SystemLogs_Level ON SystemLogs (Level);"
                 };
 
-                foreach (var command in indexCommands)
+                // TODO: Consider using batch operations to avoid N+1 queries
+            foreach (var command in indexCommands)
                 {
                     try
                     {
@@ -241,13 +243,13 @@ namespace OGRALAB.Services
 
                 // Cleanup old backup records (keep metadata, but remove very old entries)
                 var veryOldBackups = await _context.BackupRecords
-                    .Where(br => br.BackupDate < cutoffDate.AddDays(-30)) // Keep backup records for extra 30 days
+                    .Where(br => br.BackupDate < cutoffDate.AddDays(-Constants.DatabaseTimeoutSeconds)) // Keep backup records for extra Constants.DatabaseTimeoutSeconds days
                     .CountAsync();
 
                 if (veryOldBackups > 0)
                 {
                     await _context.BackupRecords
-                        .Where(br => br.BackupDate < cutoffDate.AddDays(-30))
+                        .Where(br => br.BackupDate < cutoffDate.AddDays(-Constants.DatabaseTimeoutSeconds))
                         .ExecuteDeleteAsync();
                     
                     await _loggingService.LogInfoAsync($"تم حذف {veryOldBackups} سجل نسخ احتياطية قديم", "DatabaseOptimization");
@@ -465,10 +467,10 @@ namespace OGRALAB.Services
                 }
 
                 report.TableCount = report.TableStats.Count;
-                report.IndexCount = 15; // Approximate for SQLite
+                report.IndexCount = Constants.CacheDurationMinutes; // Approximate for SQLite
 
                 // Add recommendations
-                if (report.TotalSize > 100 * 1024 * 1024) // > 100MB
+                if (report.TotalSize > Constants.CompletePercentage * 1024 * 1024) // > 100MB
                 {
                     report.Recommendations.Add("قاعدة البيانات كبيرة الحجم - فكر في أرشفة البيانات القديمة");
                 }
@@ -522,7 +524,8 @@ namespace OGRALAB.Services
                     new { Name = "SystemLogs", RecordCount = await _context.SystemLogs.CountAsync() }
                 };
 
-                foreach (var table in tables)
+                // TODO: Consider using batch operations to avoid N+1 queries
+            foreach (var table in tables)
                 {
                     tableStats.Add(new TableStatistics
                     {
@@ -587,7 +590,7 @@ namespace OGRALAB.Services
 
         public async Task SetBatchSizeAsync(int size)
         {
-            _batchSize = Math.Max(100, Math.Min(10000, size)); // Between 100 and 10000
+            _batchSize = Math.Max(Constants.CompletePercentage, Math.Min(10000, size)); // Between Constants.CompletePercentage and 10000
             await _loggingService.LogInfoAsync($"تم تعيين حجم المجموعة إلى {_batchSize}", "DatabaseOptimization");
         }
 
@@ -644,7 +647,7 @@ namespace OGRALAB.Services
                 IdleConnections = 0,
                 MaxPoolSize = 1,
                 MinPoolSize = 1,
-                AverageConnectionTime = TimeSpan.FromMilliseconds(10)
+                AverageConnectionTime = TimeSpan.FromMilliseconds(Constants.MaxConcurrentOperations)
             };
         }
 

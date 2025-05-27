@@ -1,4 +1,5 @@
 using System;
+using OGRALAB.Helpers;
 using System.Text.RegularExpressions;
 
 namespace OGRALAB.Helpers
@@ -34,10 +35,10 @@ namespace OGRALAB.Helpers
             // Saudi phone number patterns
             var patterns = new[]
             {
-                @"^05\d{8}$",           // 05xxxxxxxx (10 digits)
-                @"^\+9665\d{8}$",       // +9665xxxxxxxx
-                @"^009665\d{8}$",       // 009665xxxxxxxx
-                @"^9665\d{8}$"          // 9665xxxxxxxx
+                @"^05\d{Constants.MinPasswordLength}$",           // 05xxxxxxxx (Constants.MaxConcurrentOperations digits)
+                @"^\+9665\d{Constants.MinPasswordLength}$",       // +9665xxxxxxxx
+                @"^009665\d{Constants.MinPasswordLength}$",       // 009665xxxxxxxx
+                @"^9665\d{Constants.MinPasswordLength}$"          // 9665xxxxxxxx
             };
 
             foreach (var pattern in patterns)
@@ -58,8 +59,8 @@ namespace OGRALAB.Helpers
             // Remove any spaces or dashes
             var cleanId = nationalId.Replace(" ", "").Replace("-", "");
 
-            // Must be exactly 10 digits
-            if (cleanId.Length != 10 || !Regex.IsMatch(cleanId, @"^\d{10}$"))
+            // Must be exactly Constants.MaxConcurrentOperations digits
+            if (cleanId.Length != Constants.MaxConcurrentOperations || !Regex.IsMatch(cleanId, @"^\d{Constants.MaxConcurrentOperations}$"))
                 return false;
 
             // First digit should be 1 or 2 for Saudi nationals
@@ -112,8 +113,8 @@ namespace OGRALAB.Helpers
             if (string.IsNullOrWhiteSpace(username))
                 return false;
 
-            // Username should be 3-50 characters, alphanumeric and underscore only
-            var usernameRegex = new Regex(@"^[a-zA-Z0-9_]{3,50}$");
+            // Username should be 3-Constants.DefaultPageSize characters, alphanumeric and underscore only
+            var usernameRegex = new Regex(@"^[a-zA-Z0-9_]{3,Constants.DefaultPageSize}$");
             return usernameRegex.IsMatch(username);
         }
 
@@ -133,14 +134,14 @@ namespace OGRALAB.Helpers
                     {
                         digit *= 2;
                         if (digit > 9)
-                            digit = (digit % 10) + 1;
+                            digit = (digit % Constants.MaxConcurrentOperations) + 1;
                     }
 
                     sum += digit;
                     alternate = !alternate;
                 }
 
-                return (sum % 10) == 0;
+                return (sum % Constants.MaxConcurrentOperations) == 0;
             }
             catch
             {

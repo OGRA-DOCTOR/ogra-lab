@@ -1,7 +1,6 @@
 using System;
 using System.Threading.Tasks;
 using System.Windows;
-using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 
 namespace OGRALAB.Services

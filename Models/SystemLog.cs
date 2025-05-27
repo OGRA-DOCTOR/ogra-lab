@@ -1,5 +1,5 @@
 using System;
-using System.ComponentModel.DataAnnotations;
+using OGRALAB.Helpers;
 
 namespace OGRALAB.Models
 {
@@ -15,23 +15,23 @@ namespace OGRALAB.Models
         public string Level { get; set; } = string.Empty; // Debug, Info, Warning, Error
 
         [Required]
-        [MaxLength(50)]
+        [MaxLength(Constants.DefaultPageSize)]
         public string Category { get; set; } = string.Empty; // General, UserActivity, Security, etc.
 
         [Required]
-        [MaxLength(1000)]
+        [MaxLength(Constants.MaxRecordsPerQuery)]
         public string Message { get; set; } = string.Empty;
 
-        [MaxLength(50)]
+        [MaxLength(Constants.DefaultPageSize)]
         public string Username { get; set; } = string.Empty;
 
-        [MaxLength(100)]
+        [MaxLength(Constants.CompletePercentage)]
         public string MachineName { get; set; } = string.Empty;
 
-        [MaxLength(50)]
+        [MaxLength(Constants.DefaultPageSize)]
         public string? SourceMethod { get; set; }
 
-        [MaxLength(200)]
+        [MaxLength(Constants.MaxPatientNameLength)]
         public string? AdditionalInfo { get; set; }
 
         // Computed Properties

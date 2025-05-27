@@ -1,17 +1,14 @@
 using System;
+using OGRALAB.Helpers;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Printing;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Media;
 using System.Windows.Xps;
 using System.Windows.Xps.Packaging;
-using Microsoft.Win32;
 using OGRALAB.Models;
-using System.Globalization;
 
 namespace OGRALAB.Views
 {
@@ -20,7 +17,7 @@ namespace OGRALAB.Views
         private Patient _patient;
         private IEnumerable<PatientTest> _tests;
         private bool _autoPrint;
-        private double _currentZoom = 100;
+        private double _currentZoom = Constants.CompletePercentage;
 
         public ReportPreviewWindow(Patient patient, IEnumerable<PatientTest> tests, bool autoPrint = false)
         {
@@ -60,7 +57,7 @@ namespace OGRALAB.Views
             document.PagePadding = new Thickness(40);
             document.ColumnWidth = double.PositiveInfinity;
             document.FontFamily = new FontFamily("Cairo, Segoe UI, Arial");
-            document.FontSize = 12;
+            document.FontSize = Constants.PasswordHashRounds;
             document.Background = Brushes.White;
 
             // Header Section
@@ -97,16 +94,16 @@ namespace OGRALAB.Views
             var logoCell = new TableCell();
             logoCell.BorderBrush = Brushes.Black;
             logoCell.BorderThickness = new Thickness(0, 0, 1, 0);
-            logoCell.Padding = new Thickness(10);
+            logoCell.Padding = new Thickness(Constants.MaxConcurrentOperations);
             logoCell.VerticalAlignment = VerticalAlignment.Center;
             
             var logoBlock = new Paragraph();
             logoBlock.TextAlignment = TextAlignment.Center;
             logoBlock.Inlines.Add(new Run("🧪 OGRA LAB") 
             { 
-                FontSize = 24, 
+                FontSize = Constants.AutoBackupIntervalHours, 
                 FontWeight = FontWeights.Bold,
-                Foreground = new SolidColorBrush(Color.FromRgb(30, 58, 138))
+                Foreground = new SolidColorBrush(Color.FromRgb(Constants.DatabaseTimeoutSeconds, 58, 138))
             });
             logoBlock.Inlines.Add(new LineBreak());
             logoBlock.Inlines.Add(new Run("مختبر أوجرا للتحاليل الطبية") 
@@ -117,7 +114,7 @@ namespace OGRALAB.Views
             logoBlock.Inlines.Add(new LineBreak());
             logoBlock.Inlines.Add(new Run("Medical Laboratory Services") 
             { 
-                FontSize = 12, 
+                FontSize = Constants.PasswordHashRounds, 
                 FontStyle = FontStyles.Italic,
                 Foreground = Brushes.Gray
             });
@@ -126,29 +123,29 @@ namespace OGRALAB.Views
 
             // Lab Info (Right side)
             var infoCell = new TableCell();
-            infoCell.Padding = new Thickness(10);
+            infoCell.Padding = new Thickness(Constants.MaxConcurrentOperations);
             infoCell.VerticalAlignment = VerticalAlignment.Center;
             
             var infoBlock = new Paragraph();
             infoBlock.TextAlignment = TextAlignment.Left;
             infoBlock.Inlines.Add(new Run("📍 Address: Medical District, Healthcare City") 
             { 
-                FontSize = 10 
+                FontSize = Constants.MaxConcurrentOperations 
             });
             infoBlock.Inlines.Add(new LineBreak());
             infoBlock.Inlines.Add(new Run("📞 Phone: +966 11 234 5678") 
             { 
-                FontSize = 10 
+                FontSize = Constants.MaxConcurrentOperations 
             });
             infoBlock.Inlines.Add(new LineBreak());
             infoBlock.Inlines.Add(new Run("📧 Email: info@ogralab.com") 
             { 
-                FontSize = 10 
+                FontSize = Constants.MaxConcurrentOperations 
             });
             infoBlock.Inlines.Add(new LineBreak());
             infoBlock.Inlines.Add(new Run("🌐 Website: www.ogralab.com") 
             { 
-                FontSize = 10 
+                FontSize = Constants.MaxConcurrentOperations 
             });
             
             infoCell.Blocks.Add(infoBlock);
@@ -167,12 +164,12 @@ namespace OGRALAB.Views
             // Patient Information Title
             var titleParagraph = new Paragraph();
             titleParagraph.TextAlignment = TextAlignment.Center;
-            titleParagraph.Margin = new Thickness(0, 10, 0, 15);
+            titleParagraph.Margin = new Thickness(0, Constants.MaxConcurrentOperations, 0, Constants.CacheDurationMinutes);
             titleParagraph.Inlines.Add(new Run("تقرير نتائج التحاليل الطبية") 
             { 
                 FontSize = 18, 
                 FontWeight = FontWeights.Bold,
-                Foreground = new SolidColorBrush(Color.FromRgb(30, 58, 138))
+                Foreground = new SolidColorBrush(Color.FromRgb(Constants.DatabaseTimeoutSeconds, 58, 138))
             });
             titleParagraph.Inlines.Add(new LineBreak());
             titleParagraph.Inlines.Add(new Run("MEDICAL TEST RESULTS REPORT") 
@@ -202,7 +199,7 @@ namespace OGRALAB.Views
             var row1 = new TableRow();
             
             var nameCell = new TableCell();
-            nameCell.Padding = new Thickness(8);
+            nameCell.Padding = new Thickness(Constants.MinPasswordLength);
             nameCell.BorderBrush = Brushes.LightGray;
             nameCell.BorderThickness = new Thickness(0, 0, 1, 1);
             var nameParagraph = new Paragraph();
@@ -219,7 +216,7 @@ namespace OGRALAB.Views
             nameCell.Blocks.Add(nameParagraph);
 
             var ageCell = new TableCell();
-            ageCell.Padding = new Thickness(8);
+            ageCell.Padding = new Thickness(Constants.MinPasswordLength);
             ageCell.BorderBrush = Brushes.LightGray;
             ageCell.BorderThickness = new Thickness(0, 0, 0, 1);
             var ageParagraph = new Paragraph();
@@ -244,7 +241,7 @@ namespace OGRALAB.Views
             var row2 = new TableRow();
             
             var doctorCell = new TableCell();
-            doctorCell.Padding = new Thickness(8);
+            doctorCell.Padding = new Thickness(Constants.MinPasswordLength);
             doctorCell.BorderBrush = Brushes.LightGray;
             doctorCell.BorderThickness = new Thickness(0, 0, 1, 1);
             var doctorParagraph = new Paragraph();
@@ -264,7 +261,7 @@ namespace OGRALAB.Views
             doctorCell.Blocks.Add(doctorParagraph);
 
             var regDateCell = new TableCell();
-            regDateCell.Padding = new Thickness(8);
+            regDateCell.Padding = new Thickness(Constants.MinPasswordLength);
             regDateCell.BorderBrush = Brushes.LightGray;
             regDateCell.BorderThickness = new Thickness(0, 0, 0, 1);
             var regDateParagraph = new Paragraph();
@@ -280,7 +277,7 @@ namespace OGRALAB.Views
             var row3 = new TableRow();
             
             var patientIdCell = new TableCell();
-            patientIdCell.Padding = new Thickness(8);
+            patientIdCell.Padding = new Thickness(Constants.MinPasswordLength);
             patientIdCell.BorderBrush = Brushes.LightGray;
             patientIdCell.BorderThickness = new Thickness(0, 0, 1, 0);
             var patientIdParagraph = new Paragraph();
@@ -289,7 +286,7 @@ namespace OGRALAB.Views
             patientIdCell.Blocks.Add(patientIdParagraph);
 
             var printDateCell = new TableCell();
-            printDateCell.Padding = new Thickness(8);
+            printDateCell.Padding = new Thickness(Constants.MinPasswordLength);
             var printDateParagraph = new Paragraph();
             printDateParagraph.Inlines.Add(new Run("Print Date: ") { FontWeight = FontWeights.Bold });
             printDateParagraph.Inlines.Add(new Run(DateTime.Now.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)));
@@ -309,17 +306,17 @@ namespace OGRALAB.Views
             // Tests Results Title
             var resultsTitle = new Paragraph();
             resultsTitle.TextAlignment = TextAlignment.Center;
-            resultsTitle.Margin = new Thickness(0, 20, 0, 15);
+            resultsTitle.Margin = new Thickness(0, 20, 0, Constants.CacheDurationMinutes);
             resultsTitle.Inlines.Add(new Run("نتائج التحاليل") 
             { 
                 FontSize = 16, 
                 FontWeight = FontWeights.Bold,
-                Foreground = new SolidColorBrush(Color.FromRgb(30, 58, 138))
+                Foreground = new SolidColorBrush(Color.FromRgb(Constants.DatabaseTimeoutSeconds, 58, 138))
             });
             resultsTitle.Inlines.Add(new LineBreak());
             resultsTitle.Inlines.Add(new Run("TEST RESULTS") 
             { 
-                FontSize = 12, 
+                FontSize = Constants.PasswordHashRounds, 
                 FontStyle = FontStyles.Italic,
                 Foreground = Brushes.Gray
             });
@@ -335,13 +332,13 @@ namespace OGRALAB.Views
             // Define columns: Test Name, Value, Unit, Alert, Normal Range
             resultsTable.Columns.Add(new TableColumn { Width = new GridLength(2, GridUnitType.Star) }); // Test Name
             resultsTable.Columns.Add(new TableColumn { Width = new GridLength(1, GridUnitType.Star) }); // Value
-            resultsTable.Columns.Add(new TableColumn { Width = new GridLength(0.8, GridUnitType.Star) }); // Unit
+            resultsTable.Columns.Add(new TableColumn { Width = new GridLength(0.Constants.MinPasswordLength, GridUnitType.Star) }); // Unit
             resultsTable.Columns.Add(new TableColumn { Width = new GridLength(0.5, GridUnitType.Star) }); // Alert
             resultsTable.Columns.Add(new TableColumn { Width = new GridLength(1.5, GridUnitType.Star) }); // Normal Range
 
             // Header Row
             var headerRowGroup = new TableRowGroup();
-            headerRowGroup.Background = new SolidColorBrush(Color.FromRgb(30, 58, 138));
+            headerRowGroup.Background = new SolidColorBrush(Color.FromRgb(Constants.DatabaseTimeoutSeconds, 58, 138));
             
             var headerRow = new TableRow();
             
@@ -411,8 +408,8 @@ namespace OGRALAB.Views
 
             // Legend for abnormal values
             var legendParagraph = new Paragraph();
-            legendParagraph.Margin = new Thickness(0, 10, 0, 0);
-            legendParagraph.FontSize = 10;
+            legendParagraph.Margin = new Thickness(0, Constants.MaxConcurrentOperations, 0, 0);
+            legendParagraph.FontSize = Constants.MaxConcurrentOperations;
             legendParagraph.Inlines.Add(new Run("* ") 
             { 
                 FontWeight = FontWeights.Bold, 
@@ -426,7 +423,7 @@ namespace OGRALAB.Views
         private void AddTableHeaderCell(TableRow row, string text)
         {
             var cell = new TableCell();
-            cell.Padding = new Thickness(8);
+            cell.Padding = new Thickness(Constants.MinPasswordLength);
             cell.BorderBrush = Brushes.White;
             cell.BorderThickness = new Thickness(1);
             cell.TextAlignment = TextAlignment.Center;
@@ -436,7 +433,7 @@ namespace OGRALAB.Views
             { 
                 FontWeight = FontWeights.Bold, 
                 Foreground = Brushes.White,
-                FontSize = 12
+                FontSize = Constants.PasswordHashRounds
             });
             
             cell.Blocks.Add(paragraph);
@@ -464,8 +461,8 @@ namespace OGRALAB.Views
             
             // Footer with signature area
             var footerParagraph = new Paragraph();
-            footerParagraph.Margin = new Thickness(0, 30, 0, 0);
-            footerParagraph.FontSize = 10;
+            footerParagraph.Margin = new Thickness(0, Constants.DatabaseTimeoutSeconds, 0, 0);
+            footerParagraph.FontSize = Constants.MaxConcurrentOperations;
             footerParagraph.TextAlignment = TextAlignment.Justify;
             
             footerParagraph.Inlines.Add(new Run("ملاحظات: ") { FontWeight = FontWeights.Bold });
@@ -483,7 +480,7 @@ namespace OGRALAB.Views
             // Final footer
             var finalFooter = new Paragraph();
             finalFooter.Margin = new Thickness(0, 20, 0, 0);
-            finalFooter.FontSize = 8;
+            finalFooter.FontSize = Constants.MinPasswordLength;
             finalFooter.TextAlignment = TextAlignment.Center;
             finalFooter.Foreground = Brushes.Gray;
             finalFooter.Inlines.Add(new Run("OGRA LAB - Medical Laboratory Services | www.ogralab.com | Generated on "));
@@ -558,7 +555,6 @@ namespace OGRALAB.Views
         {
             var document = ReportViewer.Document;
             
-            using (var xpsDocument = new XpsDocument(fileName, FileAccess.Write))
             {
                 var xpsDocumentWriter = XpsDocument.CreateXpsDocumentWriter(xpsDocument);
                 xpsDocumentWriter.Write(((IDocumentPaginatorSource)document).DocumentPaginator);
@@ -588,15 +584,15 @@ namespace OGRALAB.Views
 
         private void ZoomInButton_Click(object sender, RoutedEventArgs e)
         {
-            _currentZoom += 10;
-            if (_currentZoom > 200) _currentZoom = 200;
+            _currentZoom += Constants.MaxConcurrentOperations;
+            if (_currentZoom > Constants.MaxPatientNameLength) _currentZoom = Constants.MaxPatientNameLength;
             ReportViewer.Zoom = _currentZoom;
         }
 
         private void ZoomOutButton_Click(object sender, RoutedEventArgs e)
         {
-            _currentZoom -= 10;
-            if (_currentZoom < 50) _currentZoom = 50;
+            _currentZoom -= Constants.MaxConcurrentOperations;
+            if (_currentZoom < Constants.DefaultPageSize) _currentZoom = Constants.DefaultPageSize;
             ReportViewer.Zoom = _currentZoom;
         }
     }

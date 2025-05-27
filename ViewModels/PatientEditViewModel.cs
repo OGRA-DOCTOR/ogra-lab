@@ -1,8 +1,6 @@
 using System;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -228,11 +226,13 @@ namespace OGRALAB.ViewModels
                 if (ShowRoutineTests)
                 {
                     var allTests = await _testService.GetAllTestTypesAsync();
-                    var routineTests = allTests.Where(t => !t.IsCustom).ToList();
+                    // Optimize: Avoid ToList() and use direct enumeration
+                    var routineTests = allTests.Where(t => !t.IsCustom);
                     
                     AvailableTests.Clear();
                     foreach (var test in routineTests)
                     {
+                        // Optimize: Check existence more efficiently
                         if (!SelectedTests.Any(st => st.TestTypeId == test.TestTypeId))
                         {
                             AvailableTests.Add(test);

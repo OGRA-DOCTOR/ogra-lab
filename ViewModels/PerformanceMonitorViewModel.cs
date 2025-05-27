@@ -1,8 +1,6 @@
 using System;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -392,14 +390,14 @@ namespace OGRALAB.ViewModels
         {
             // Assume 512MB as maximum reasonable usage
             const double maxReasonableUsage = 512.0;
-            MemoryUsagePercentage = Math.Min(100, (MemoryUsageMB / maxReasonableUsage) * 100);
+            MemoryUsagePercentage = Math.Min(Constants.CompletePercentage, (MemoryUsageMB / maxReasonableUsage) * Constants.CompletePercentage);
         }
 
         private void UpdatePerformanceScoreColor()
         {
             PerformanceScoreColor = PerformanceScore switch
             {
-                >= 80 => new SolidColorBrush(Colors.Green),
+                >= Constants.HighCompletionThreshold => new SolidColorBrush(Colors.Green),
                 >= 60 => new SolidColorBrush(Colors.Orange),
                 _ => new SolidColorBrush(Colors.Red)
             };
@@ -407,26 +405,26 @@ namespace OGRALAB.ViewModels
 
         private int CalculatePerformanceScore(PerformanceMetrics metrics)
         {
-            int score = 100;
+            int score = Constants.CompletePercentage;
 
             // Memory usage penalty
             var memoryUsageMB = metrics.MemoryUsage / 1024.0 / 1024.0;
             if (memoryUsageMB > 300) score -= 20;
-            else if (memoryUsageMB > 200) score -= 10;
+            else if (memoryUsageMB > Constants.MaxPatientNameLength) score -= Constants.MaxConcurrentOperations;
 
             // CPU usage penalty
-            if (metrics.CpuUsage > 80) score -= 20;
-            else if (metrics.CpuUsage > 60) score -= 10;
+            if (metrics.CpuUsage > Constants.HighCompletionThreshold) score -= 20;
+            else if (metrics.CpuUsage > 60) score -= Constants.MaxConcurrentOperations;
 
             // Cache hit ratio bonus/penalty
-            if (metrics.CacheHitRatio < 70) score -= 15;
+            if (metrics.CacheHitRatio < 70) score -= Constants.CacheDurationMinutes;
             else if (metrics.CacheHitRatio > 90) score += 5;
 
             // Database size penalty
             var dbSizeMB = metrics.DatabaseSize / 1024.0 / 1024.0;
-            if (dbSizeMB > 100) score -= 10;
+            if (dbSizeMB > Constants.CompletePercentage) score -= Constants.MaxConcurrentOperations;
 
-            return Math.Max(0, Math.Min(100, score));
+            return Math.Max(0, Math.Min(Constants.CompletePercentage, score));
         }
 
         private string FormatUptime(TimeSpan uptime)

@@ -1,12 +1,9 @@
 using System;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
-using Microsoft.Win32;
 using OGRALAB.Models;
 using OGRALAB.Services;
 using OGRALAB.Helpers;
@@ -23,8 +20,8 @@ namespace OGRALAB.ViewModels
         private bool _isLoading;
         private string _newBackupDescription = string.Empty;
         private bool _autoBackupEnabled;
-        private int _autoBackupIntervalHours = 24;
-        private int _maxBackupFiles = 10;
+        private int _autoBackupIntervalHours = Constants.AutoBackupIntervalHours;
+        private int _maxBackupFiles = Constants.MaxConcurrentOperations;
         private string _backupPath = string.Empty;
 
         public BackupManagementViewModel(IBackupService backupService, IAuthenticationService authenticationService)
@@ -188,8 +185,8 @@ namespace OGRALAB.ViewModels
                 // This would typically load from system settings
                 // For now, we'll use default values
                 AutoBackupEnabled = true;
-                AutoBackupIntervalHours = 24;
-                MaxBackupFiles = 10;
+                AutoBackupIntervalHours = Constants.AutoBackupIntervalHours;
+                MaxBackupFiles = Constants.MaxConcurrentOperations;
                 BackupPath = @"C:\OgraLab\Backups";
             }
             catch (Exception ex)

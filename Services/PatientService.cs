@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using OGRALAB.Data;
 using OGRALAB.Models;
+using OGRALAB.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,7 +22,31 @@ namespace OGRALAB.Services
         {
             return await _context.Patients
                 .OrderByDescending(p => p.CreatedDate)
+                .Take(Constants.MaxRecordsPerQuery)
                 .ToListAsync();
+        }
+
+        /// <summary>
+        /// Get patients with pagination for better performance
+        /// </summary>
+        public async Task<IEnumerable<Patient>> GetPatientsPagedAsync(int page = 1, int pageSize = 0)
+        {
+            if (pageSize <= 0) pageSize = Constants.DefaultPageSize;
+            if (pageSize > Constants.MaxPageSize) pageSize = Constants.MaxPageSize;
+            
+            return await _context.Patients
+                .OrderByDescending(p => p.CreatedDate)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+        }
+
+        /// <summary>
+        /// Get total count of patients for pagination
+        /// </summary>
+        public async Task<int> GetPatientsCountAsync()
+        {
+            return await _context.Patients.CountAsync();
         }
 
         public async Task<Patient?> GetPatientByIdAsync(int patientId)

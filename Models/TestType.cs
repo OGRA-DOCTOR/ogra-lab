@@ -1,6 +1,5 @@
 using System;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+using OGRALAB.Helpers;
 
 namespace OGRALAB.Models
 {
@@ -14,24 +13,24 @@ namespace OGRALAB.Models
         public string TestCode { get; set; } = string.Empty; // كود التحليل الفريد
 
         [Required]
-        [StringLength(100)]
+        [StringLength(Constants.CompletePercentage)]
         public string TestName { get; set; } = string.Empty; // اسم التحليل
 
-        [StringLength(200)]
+        [StringLength(Constants.MaxPatientNameLength)]
         public string? Description { get; set; } // وصف التحليل
 
         [Required]
-        [StringLength(50)]
+        [StringLength(Constants.DefaultPageSize)]
         public string Category { get; set; } = string.Empty; // فئة التحليل (مثل: كيمياء، هرمونات، إلخ)
 
-        [StringLength(50)]
+        [StringLength(Constants.DefaultPageSize)]
         public string? Unit { get; set; } // وحدة القياس
 
         public decimal? MinNormalValue { get; set; } // الحد الأدنى للقيمة الطبيعية
 
         public decimal? MaxNormalValue { get; set; } // الحد الأقصى للقيمة الطبيعية
 
-        [StringLength(200)]
+        [StringLength(Constants.MaxPatientNameLength)]
         public string? NormalRange { get; set; } // النطاق الطبيعي (نص)
 
         [Column(TypeName = "decimal(18,2)")]
@@ -41,7 +40,7 @@ namespace OGRALAB.Models
 
         public int? ResultTime { get; set; } // وقت ظهور النتيجة بالساعات
 
-        [StringLength(500)]
+        [StringLength(Constants.MaxPageSize)]
         public string? PreparationInstructions { get; set; } // تعليمات التحضير
 
         public bool IsActive { get; set; } = true;

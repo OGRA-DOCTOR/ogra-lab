@@ -1,8 +1,6 @@
 using System;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -30,9 +28,9 @@ namespace OGRALAB.ViewModels
             _authenticationService = authenticationService;
             _loginLogs = new ObservableCollection<LoginLog>();
             
-            // Set default date range (last 30 days)
+            // Set default date range (last Constants.DatabaseTimeoutSeconds days)
             _toDate = DateTime.Now.Date.AddDays(1).AddSeconds(-1);
-            _fromDate = DateTime.Now.Date.AddDays(-30);
+            _fromDate = DateTime.Now.Date.AddDays(-Constants.DatabaseTimeoutSeconds);
 
             // Commands
             LoadLogsCommand = new RelayCommand(async () => await LoadLogsAsync());

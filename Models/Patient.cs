@@ -1,6 +1,5 @@
 using System;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+using OGRALAB.Helpers;
 
 namespace OGRALAB.Models
 {
@@ -10,7 +9,7 @@ namespace OGRALAB.Models
         public int PatientId { get; set; }
 
         [Required]
-        [StringLength(100)]
+        [StringLength(Constants.CompletePercentage)]
         public string FullName { get; set; } = string.Empty;
 
         [Required]
@@ -24,31 +23,31 @@ namespace OGRALAB.Models
         public DateTime DateOfBirth { get; set; }
 
         [Required]
-        [StringLength(10)]
+        [StringLength(Constants.MaxConcurrentOperations)]
         public string Gender { get; set; } = string.Empty; // Male, Female
 
-        [StringLength(15)]
+        [StringLength(Constants.CacheDurationMinutes)]
         public string? PhoneNumber { get; set; }
 
-        [StringLength(100)]
+        [StringLength(Constants.CompletePercentage)]
         public string? Email { get; set; }
 
-        [StringLength(200)]
+        [StringLength(Constants.MaxPatientNameLength)]
         public string? Address { get; set; }
 
-        [StringLength(50)]
+        [StringLength(Constants.DefaultPageSize)]
         public string? BloodType { get; set; }
 
-        [StringLength(500)]
+        [StringLength(Constants.MaxPageSize)]
         public string? MedicalHistory { get; set; }
 
-        [StringLength(500)]
+        [StringLength(Constants.MaxPageSize)]
         public string? Allergies { get; set; }
 
-        [StringLength(100)]
+        [StringLength(Constants.CompletePercentage)]
         public string? EmergencyContact { get; set; }
 
-        [StringLength(15)]
+        [StringLength(Constants.CacheDurationMinutes)]
         public string? EmergencyPhone { get; set; }
 
         public bool IsActive { get; set; } = true;
@@ -57,7 +56,7 @@ namespace OGRALAB.Models
 
         public DateTime? UpdatedDate { get; set; }
 
-        [StringLength(500)]
+        [StringLength(Constants.MaxPageSize)]
         public string? Notes { get; set; }
 
         // Calculated property

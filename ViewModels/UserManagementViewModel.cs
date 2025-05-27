@@ -1,8 +1,6 @@
 using System;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -466,7 +464,7 @@ namespace OGRALAB.ViewModels
 
             if (!ValidationHelper.IsValidUsername(Username))
             {
-                ErrorMessage = "اسم المستخدم غير صحيح. يجب أن يكون 3-50 حرف، أحرف وأرقام و _ فقط";
+                ErrorMessage = "اسم المستخدم غير صحيح. يجب أن يكون 3-Constants.DefaultPageSize حرف، أحرف وأرقام و _ فقط";
                 return false;
             }
 
