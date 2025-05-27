@@ -117,6 +117,41 @@ var isAuthenticated = authService.IsAuthenticated;
 
 ## أمثلة على الاستخدام
 
+### تسجيل الدخول والمصادقة
+```csharp
+var authService = App.GetService<IAuthenticationService>();
+var user = await authService.AuthenticateAsync("Manager", "0000");
+
+if (user != null)
+{
+    Console.WriteLine($"تم تسجيل الدخول بنجاح: {user.FullName}");
+    Console.WriteLine($"الدور: {user.Role}");
+}
+```
+
+### التحقق من الصلاحيات
+```csharp
+var currentUser = authService.CurrentUser;
+
+// التحقق من إمكانية إدارة المستخدمين
+if (currentUser?.Role == "SystemUser")
+{
+    // إظهار واجهة إدارة المستخدمين
+}
+
+// التحقق من إمكانية حذف المرضى
+if (currentUser?.Role == "SystemUser" || currentUser?.Role == "AdminUser")
+{
+    // إظهار زر الحذف
+}
+```
+
+### عرض سجل الدخول
+```csharp
+var loginLogWindow = new LoginLogWindow();
+loginLogWindow.ShowDialog();
+```
+
 ### إضافة مريض جديد
 ```csharp
 var patientService = App.GetService<IPatientService>();
@@ -166,21 +201,38 @@ var createdResult = await testService.CreateTestResultAsync(result);
 
 ## التطوير التدريجي
 
-### المرحلة التالية (Phase 2)
-1. **واجهة تسجيل الدخول**
-   - إنشاء LoginWindow.xaml
-   - إنشاء LoginViewModel
-   - ربط خدمة المصادقة
+### ✅ المرحلة الثانية مكتملة (Phase 2)
+1. **✅ نظام تسجيل الدخول**
+   - LoginWindow.xaml مع تصميم أنيق
+   - LoginViewModel مع إدارة حالة التحميل
+   - نظام صلاحيات ثلاثي المستويات
+   - سجل تفصيلي للدخول والخروج
 
-2. **واجهات إدارة المرضى**
+2. **✅ نظام الأدوار والصلاحيات**
+   - SystemUser: صلاحيات كاملة
+   - AdminUser: جميع المهام عدا إدارة المستخدمين
+   - RegularUser: مهام أساسية بدون حذف
+
+3. **✅ سجل الأنشطة**
+   - LoginLogWindow.xaml لعرض السجلات
+   - تتبع مدة الجلسات
+   - خيارات التصفية والحذف
+
+### المرحلة التالية (Phase 3)
+1. **واجهات إدارة المرضى**
    - إنشاء PatientListWindow.xaml
    - إنشاء PatientEditWindow.xaml
    - إنشاء PatientViewModel
 
-3. **واجهات إدارة التحاليل**
+2. **واجهات إدارة التحاليل**
    - إنشاء TestOrderWindow.xaml
    - إنشاء TestResultWindow.xaml
    - إنشاء TestViewModel
+
+3. **واجهة إدارة المستخدمين**
+   - إنشاء UserManagementWindow.xaml
+   - إضافة/تعديل/حذف المستخدمين
+   - إدارة الأدوار والصلاحيات
 
 ### نصائح للتطوير
 
