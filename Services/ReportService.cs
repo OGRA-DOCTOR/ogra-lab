@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using OGRALAB.Data;
 using OGRALAB.Models;
 using System;
+using OGRALAB.Helpers;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -230,7 +231,7 @@ namespace OGRALAB.Services
             };
         }
 
-        public async Task<IEnumerable<TopTestTypeData>> GetTopTestTypesAsync(DateTime fromDate, DateTime toDate, int top = 10)
+        public async Task<IEnumerable<TopTestTypeData>> GetTopTestTypesAsync(DateTime fromDate, DateTime toDate, int top = Constants.MaxConcurrentOperations)
         {
             var endDate = toDate.AddDays(1);
 

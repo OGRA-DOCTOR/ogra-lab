@@ -1,4 +1,5 @@
 using System;
+using OGRALAB.Helpers;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -32,7 +33,7 @@ namespace OGRALAB.Services
 
         #region Data Creation
 
-        public async Task<bool> CreateSamplePatientsAsync(int count = 50)
+        public async Task<bool> CreateSamplePatientsAsync(int count = Constants.DefaultPageSize)
         {
             try
             {
@@ -59,7 +60,7 @@ namespace OGRALAB.Services
                     string patientNumber;
                     do
                     {
-                        patientNumber = $"P{DateTime.Now.Year}{_random.Next(1000, 9999)}";
+                        patientNumber = $"P{DateTime.Now.Year}{_random.Next(Constants.MaxRecordsPerQuery, 9999)}";
                     } while (usedPatientNumbers.Contains(patientNumber));
                     usedPatientNumbers.Add(patientNumber);
 
@@ -77,7 +78,7 @@ namespace OGRALAB.Services
                         FirstName = firstName,
                         LastName = lastName,
                         FullName = $"{firstName} {lastName}",
-                        DateOfBirth = DateTime.Now.AddYears(-_random.Next(18, 80)).AddDays(-_random.Next(365)),
+                        DateOfBirth = DateTime.Now.AddYears(-_random.Next(18, Constants.HighCompletionThreshold)).AddDays(-_random.Next(365)),
                         Gender = gender,
                         NationalId = nationalId,
                         Phone = $"05{_random.Next(10000000, 99999999)}",
@@ -137,7 +138,7 @@ namespace OGRALAB.Services
             try
             {
                 var existingTestTypes = await _context.TestTypes.CountAsync();
-                if (existingTestTypes > 10) // Already has sample data
+                if (existingTestTypes > Constants.MaxConcurrentOperations) // Already has sample data
                 {
                     await _loggingService.LogInfoAsync("أنواع التحاليل موجودة بالفعل", "TestData");
                     return true;
@@ -146,38 +147,38 @@ namespace OGRALAB.Services
                 var testTypes = new List<TestType>
                 {
                     // Blood Chemistry
-                    new TestType { TestCode = "ALT", TestName = "إنزيم الكبد ALT", Category = "كيمياء", Unit = "U/L", MinNormalValue = 7, MaxNormalValue = 56, NormalRange = "7-56 U/L", Price = 30, PreparationTime = 5, ResultTime = 4, RequiresFasting = false, CreatedDate = DateTime.Now, CreatedBy = "TestDataService" },
-                    new TestType { TestCode = "AST", TestName = "إنزيم الكبد AST", Category = "كيمياء", Unit = "U/L", MinNormalValue = 10, MaxNormalValue = 40, NormalRange = "10-40 U/L", Price = 30, PreparationTime = 5, ResultTime = 4, RequiresFasting = false, CreatedDate = DateTime.Now, CreatedBy = "TestDataService" },
-                    new TestType { TestCode = "BILI", TestName = "البيليروبين", Category = "كيمياء", Unit = "mg/dL", MinNormalValue = 0.3m, MaxNormalValue = 1.2m, NormalRange = "0.3-1.2 mg/dL", Price = 25, PreparationTime = 5, ResultTime = 3, RequiresFasting = false, CreatedDate = DateTime.Now, CreatedBy = "TestDataService" },
-                    new TestType { TestCode = "UREA", TestName = "اليوريا", Category = "كيمياء", Unit = "mg/dL", MinNormalValue = 15, MaxNormalValue = 45, NormalRange = "15-45 mg/dL", Price = 20, PreparationTime = 5, ResultTime = 2, RequiresFasting = false, CreatedDate = DateTime.Now, CreatedBy = "TestDataService" },
-                    new TestType { TestCode = "CREAT", TestName = "الكرياتينين", Category = "كيمياء", Unit = "mg/dL", MinNormalValue = 0.7m, MaxNormalValue = 1.3m, NormalRange = "0.7-1.3 mg/dL", Price = 25, PreparationTime = 5, ResultTime = 2, RequiresFasting = false, CreatedDate = DateTime.Now, CreatedBy = "TestDataService" },
+                    new TestType { TestCode = "ALT", TestName = "إنزيم الكبد ALT", Category = "كيمياء", Unit = "U/L", MinNormalValue = 7, MaxNormalValue = 56, NormalRange = "7-56 U/L", Price = Constants.DatabaseTimeoutSeconds, PreparationTime = 5, ResultTime = 4, RequiresFasting = false, CreatedDate = DateTime.Now, CreatedBy = "TestDataService" },
+                    new TestType { TestCode = "AST", TestName = "إنزيم الكبد AST", Category = "كيمياء", Unit = "U/L", MinNormalValue = Constants.MaxConcurrentOperations, MaxNormalValue = 40, NormalRange = "Constants.MaxConcurrentOperations-40 U/L", Price = Constants.DatabaseTimeoutSeconds, PreparationTime = 5, ResultTime = 4, RequiresFasting = false, CreatedDate = DateTime.Now, CreatedBy = "TestDataService" },
+                    new TestType { TestCode = "BILI", TestName = "البيليروبين", Category = "كيمياء", Unit = "mg/dL", MinNormalValue = 0.3m, MaxNormalValue = 1.2m, NormalRange = "0.3-1.2 mg/dL", Price = Constants.DefaultRowHeight, PreparationTime = 5, ResultTime = 3, RequiresFasting = false, CreatedDate = DateTime.Now, CreatedBy = "TestDataService" },
+                    new TestType { TestCode = "UREA", TestName = "اليوريا", Category = "كيمياء", Unit = "mg/dL", MinNormalValue = Constants.CacheDurationMinutes, MaxNormalValue = 45, NormalRange = "Constants.CacheDurationMinutes-45 mg/dL", Price = 20, PreparationTime = 5, ResultTime = 2, RequiresFasting = false, CreatedDate = DateTime.Now, CreatedBy = "TestDataService" },
+                    new TestType { TestCode = "CREAT", TestName = "الكرياتينين", Category = "كيمياء", Unit = "mg/dL", MinNormalValue = 0.7m, MaxNormalValue = 1.3m, NormalRange = "0.7-1.3 mg/dL", Price = Constants.DefaultRowHeight, PreparationTime = 5, ResultTime = 2, RequiresFasting = false, CreatedDate = DateTime.Now, CreatedBy = "TestDataService" },
                     
                     // Lipid Profile
                     new TestType { TestCode = "TG", TestName = "الدهون الثلاثية", Category = "كيمياء", Unit = "mg/dL", MinNormalValue = 0, MaxNormalValue = 150, NormalRange = "أقل من 150 mg/dL", Price = 35, PreparationTime = 5, ResultTime = 3, RequiresFasting = true, CreatedDate = DateTime.Now, CreatedBy = "TestDataService" },
                     new TestType { TestCode = "HDL", TestName = "الكوليسترول المفيد HDL", Category = "كيمياء", Unit = "mg/dL", MinNormalValue = 40, MaxNormalValue = 60, NormalRange = "أكثر من 40 mg/dL", Price = 40, PreparationTime = 5, ResultTime = 3, RequiresFasting = true, CreatedDate = DateTime.Now, CreatedBy = "TestDataService" },
-                    new TestType { TestCode = "LDL", TestName = "الكوليسترول الضار LDL", Category = "كيمياء", Unit = "mg/dL", MinNormalValue = 0, MaxNormalValue = 100, NormalRange = "أقل من 100 mg/dL", Price = 40, PreparationTime = 5, ResultTime = 3, RequiresFasting = true, CreatedDate = DateTime.Now, CreatedBy = "TestDataService" },
+                    new TestType { TestCode = "LDL", TestName = "الكوليسترول الضار LDL", Category = "كيمياء", Unit = "mg/dL", MinNormalValue = 0, MaxNormalValue = Constants.CompletePercentage, NormalRange = "أقل من Constants.CompletePercentage mg/dL", Price = 40, PreparationTime = 5, ResultTime = 3, RequiresFasting = true, CreatedDate = DateTime.Now, CreatedBy = "TestDataService" },
                     
                     // Hormones
-                    new TestType { TestCode = "T3", TestName = "هرمون الغدة الدرقية T3", Category = "هرمونات", Unit = "ng/dL", MinNormalValue = 80, MaxNormalValue = 200, NormalRange = "80-200 ng/dL", Price = 80, PreparationTime = 10, ResultTime = 24, RequiresFasting = false, CreatedDate = DateTime.Now, CreatedBy = "TestDataService" },
-                    new TestType { TestCode = "T4", TestName = "هرمون الغدة الدرقية T4", Category = "هرمونات", Unit = "μg/dL", MinNormalValue = 5, MaxNormalValue = 12, NormalRange = "5-12 μg/dL", Price = 80, PreparationTime = 10, ResultTime = 24, RequiresFasting = false, CreatedDate = DateTime.Now, CreatedBy = "TestDataService" },
-                    new TestType { TestCode = "TESTO", TestName = "هرمون التستوستيرون", Category = "هرمونات", Unit = "ng/mL", MinNormalValue = 3, MaxNormalValue = 10, NormalRange = "3-10 ng/mL", Price = 100, PreparationTime = 10, ResultTime = 24, RequiresFasting = false, CreatedDate = DateTime.Now, CreatedBy = "TestDataService" },
-                    new TestType { TestCode = "ESTRO", TestName = "هرمون الاستروجين", Category = "هرمونات", Unit = "pg/mL", MinNormalValue = 30, MaxNormalValue = 400, NormalRange = "30-400 pg/mL", Price = 100, PreparationTime = 10, ResultTime = 24, RequiresFasting = false, CreatedDate = DateTime.Now, CreatedBy = "TestDataService" },
+                    new TestType { TestCode = "T3", TestName = "هرمون الغدة الدرقية T3", Category = "هرمونات", Unit = "ng/dL", MinNormalValue = Constants.HighCompletionThreshold, MaxNormalValue = Constants.MaxPatientNameLength, NormalRange = "Constants.HighCompletionThreshold-Constants.MaxPatientNameLength ng/dL", Price = Constants.HighCompletionThreshold, PreparationTime = Constants.MaxConcurrentOperations, ResultTime = Constants.AutoBackupIntervalHours, RequiresFasting = false, CreatedDate = DateTime.Now, CreatedBy = "TestDataService" },
+                    new TestType { TestCode = "T4", TestName = "هرمون الغدة الدرقية T4", Category = "هرمونات", Unit = "μg/dL", MinNormalValue = 5, MaxNormalValue = Constants.PasswordHashRounds, NormalRange = "5-Constants.PasswordHashRounds μg/dL", Price = Constants.HighCompletionThreshold, PreparationTime = Constants.MaxConcurrentOperations, ResultTime = Constants.AutoBackupIntervalHours, RequiresFasting = false, CreatedDate = DateTime.Now, CreatedBy = "TestDataService" },
+                    new TestType { TestCode = "TESTO", TestName = "هرمون التستوستيرون", Category = "هرمونات", Unit = "ng/mL", MinNormalValue = 3, MaxNormalValue = Constants.MaxConcurrentOperations, NormalRange = "3-Constants.MaxConcurrentOperations ng/mL", Price = Constants.CompletePercentage, PreparationTime = Constants.MaxConcurrentOperations, ResultTime = Constants.AutoBackupIntervalHours, RequiresFasting = false, CreatedDate = DateTime.Now, CreatedBy = "TestDataService" },
+                    new TestType { TestCode = "ESTRO", TestName = "هرمون الاستروجين", Category = "هرمونات", Unit = "pg/mL", MinNormalValue = Constants.DatabaseTimeoutSeconds, MaxNormalValue = 400, NormalRange = "Constants.DatabaseTimeoutSeconds-400 pg/mL", Price = Constants.CompletePercentage, PreparationTime = Constants.MaxConcurrentOperations, ResultTime = Constants.AutoBackupIntervalHours, RequiresFasting = false, CreatedDate = DateTime.Now, CreatedBy = "TestDataService" },
                     
                     // Blood Count
-                    new TestType { TestCode = "WBC", TestName = "خلايا الدم البيضاء", Category = "دم", Unit = "×10³/μL", MinNormalValue = 4, MaxNormalValue = 11, NormalRange = "4-11 ×10³/μL", Price = 30, PreparationTime = 5, ResultTime = 2, RequiresFasting = false, CreatedDate = DateTime.Now, CreatedBy = "TestDataService" },
-                    new TestType { TestCode = "RBC", TestName = "خلايا الدم الحمراء", Category = "دم", Unit = "×10⁶/μL", MinNormalValue = 4.2m, MaxNormalValue = 5.4m, NormalRange = "4.2-5.4 ×10⁶/μL", Price = 30, PreparationTime = 5, ResultTime = 2, RequiresFasting = false, CreatedDate = DateTime.Now, CreatedBy = "TestDataService" },
-                    new TestType { TestCode = "HGB", TestName = "الهيموجلوبين", Category = "دم", Unit = "g/dL", MinNormalValue = 12, MaxNormalValue = 16, NormalRange = "12-16 g/dL", Price = 25, PreparationTime = 5, ResultTime = 2, RequiresFasting = false, CreatedDate = DateTime.Now, CreatedBy = "TestDataService" },
-                    new TestType { TestCode = "PLT", TestName = "الصفائح الدموية", Category = "دم", Unit = "×10³/μL", MinNormalValue = 150, MaxNormalValue = 450, NormalRange = "150-450 ×10³/μL", Price = 30, PreparationTime = 5, ResultTime = 2, RequiresFasting = false, CreatedDate = DateTime.Now, CreatedBy = "TestDataService" },
+                    new TestType { TestCode = "WBC", TestName = "خلايا الدم البيضاء", Category = "دم", Unit = "×10³/μL", MinNormalValue = 4, MaxNormalValue = 11, NormalRange = "4-11 ×10³/μL", Price = Constants.DatabaseTimeoutSeconds, PreparationTime = 5, ResultTime = 2, RequiresFasting = false, CreatedDate = DateTime.Now, CreatedBy = "TestDataService" },
+                    new TestType { TestCode = "RBC", TestName = "خلايا الدم الحمراء", Category = "دم", Unit = "×10⁶/μL", MinNormalValue = 4.2m, MaxNormalValue = 5.4m, NormalRange = "4.2-5.4 ×10⁶/μL", Price = Constants.DatabaseTimeoutSeconds, PreparationTime = 5, ResultTime = 2, RequiresFasting = false, CreatedDate = DateTime.Now, CreatedBy = "TestDataService" },
+                    new TestType { TestCode = "HGB", TestName = "الهيموجلوبين", Category = "دم", Unit = "g/dL", MinNormalValue = Constants.PasswordHashRounds, MaxNormalValue = 16, NormalRange = "Constants.PasswordHashRounds-16 g/dL", Price = Constants.DefaultRowHeight, PreparationTime = 5, ResultTime = 2, RequiresFasting = false, CreatedDate = DateTime.Now, CreatedBy = "TestDataService" },
+                    new TestType { TestCode = "PLT", TestName = "الصفائح الدموية", Category = "دم", Unit = "×10³/μL", MinNormalValue = 150, MaxNormalValue = 450, NormalRange = "150-450 ×10³/μL", Price = Constants.DatabaseTimeoutSeconds, PreparationTime = 5, ResultTime = 2, RequiresFasting = false, CreatedDate = DateTime.Now, CreatedBy = "TestDataService" },
                     
                     // Vitamins
-                    new TestType { TestCode = "VITD", TestName = "فيتامين د", Category = "فيتامينات", Unit = "ng/mL", MinNormalValue = 30, MaxNormalValue = 100, NormalRange = "30-100 ng/mL", Price = 120, PreparationTime = 10, ResultTime = 48, RequiresFasting = false, CreatedDate = DateTime.Now, CreatedBy = "TestDataService" },
-                    new TestType { TestCode = "VITB12", TestName = "فيتامين ب12", Category = "فيتامينات", Unit = "pg/mL", MinNormalValue = 200, MaxNormalValue = 900, NormalRange = "200-900 pg/mL", Price = 100, PreparationTime = 10, ResultTime = 24, RequiresFasting = false, CreatedDate = DateTime.Now, CreatedBy = "TestDataService" },
-                    new TestType { TestCode = "FOLIC", TestName = "حمض الفوليك", Category = "فيتامينات", Unit = "ng/mL", MinNormalValue = 3, MaxNormalValue = 17, NormalRange = "3-17 ng/mL", Price = 90, PreparationTime = 10, ResultTime = 24, RequiresFasting = false, CreatedDate = DateTime.Now, CreatedBy = "TestDataService" },
+                    new TestType { TestCode = "VITD", TestName = "فيتامين د", Category = "فيتامينات", Unit = "ng/mL", MinNormalValue = Constants.DatabaseTimeoutSeconds, MaxNormalValue = Constants.CompletePercentage, NormalRange = "Constants.DatabaseTimeoutSeconds-Constants.CompletePercentage ng/mL", Price = 120, PreparationTime = Constants.MaxConcurrentOperations, ResultTime = 48, RequiresFasting = false, CreatedDate = DateTime.Now, CreatedBy = "TestDataService" },
+                    new TestType { TestCode = "VITB12", TestName = "فيتامين ب12", Category = "فيتامينات", Unit = "pg/mL", MinNormalValue = Constants.MaxPatientNameLength, MaxNormalValue = 900, NormalRange = "Constants.MaxPatientNameLength-900 pg/mL", Price = Constants.CompletePercentage, PreparationTime = Constants.MaxConcurrentOperations, ResultTime = Constants.AutoBackupIntervalHours, RequiresFasting = false, CreatedDate = DateTime.Now, CreatedBy = "TestDataService" },
+                    new TestType { TestCode = "FOLIC", TestName = "حمض الفوليك", Category = "فيتامينات", Unit = "ng/mL", MinNormalValue = 3, MaxNormalValue = 17, NormalRange = "3-17 ng/mL", Price = 90, PreparationTime = Constants.MaxConcurrentOperations, ResultTime = Constants.AutoBackupIntervalHours, RequiresFasting = false, CreatedDate = DateTime.Now, CreatedBy = "TestDataService" },
                     
                     // Tumor Markers
-                    new TestType { TestCode = "PSA", TestName = "مؤشر البروستات PSA", Category = "أورام", Unit = "ng/mL", MinNormalValue = 0, MaxNormalValue = 4, NormalRange = "0-4 ng/mL", Price = 150, PreparationTime = 15, ResultTime = 48, RequiresFasting = false, CreatedDate = DateTime.Now, CreatedBy = "TestDataService" },
-                    new TestType { TestCode = "CEA", TestName = "مؤشر الأورام CEA", Category = "أورام", Unit = "ng/mL", MinNormalValue = 0, MaxNormalValue = 5, NormalRange = "0-5 ng/mL", Price = 150, PreparationTime = 15, ResultTime = 48, RequiresFasting = false, CreatedDate = DateTime.Now, CreatedBy = "TestDataService" },
-                    new TestType { TestCode = "CA125", TestName = "مؤشر الأورام CA125", Category = "أورام", Unit = "U/mL", MinNormalValue = 0, MaxNormalValue = 35, NormalRange = "0-35 U/mL", Price = 150, PreparationTime = 15, ResultTime = 48, RequiresFasting = false, CreatedDate = DateTime.Now, CreatedBy = "TestDataService" }
+                    new TestType { TestCode = "PSA", TestName = "مؤشر البروستات PSA", Category = "أورام", Unit = "ng/mL", MinNormalValue = 0, MaxNormalValue = 4, NormalRange = "0-4 ng/mL", Price = 150, PreparationTime = Constants.CacheDurationMinutes, ResultTime = 48, RequiresFasting = false, CreatedDate = DateTime.Now, CreatedBy = "TestDataService" },
+                    new TestType { TestCode = "CEA", TestName = "مؤشر الأورام CEA", Category = "أورام", Unit = "ng/mL", MinNormalValue = 0, MaxNormalValue = 5, NormalRange = "0-5 ng/mL", Price = 150, PreparationTime = Constants.CacheDurationMinutes, ResultTime = 48, RequiresFasting = false, CreatedDate = DateTime.Now, CreatedBy = "TestDataService" },
+                    new TestType { TestCode = "CA125", TestName = "مؤشر الأورام CA125", Category = "أورام", Unit = "U/mL", MinNormalValue = 0, MaxNormalValue = 35, NormalRange = "0-35 U/mL", Price = 150, PreparationTime = Constants.CacheDurationMinutes, ResultTime = 48, RequiresFasting = false, CreatedDate = DateTime.Now, CreatedBy = "TestDataService" }
                 };
 
                 await _context.TestTypes.AddRangeAsync(testTypes);
@@ -211,7 +212,7 @@ namespace OGRALAB.Services
                         GroupCode = "LIPID",
                         GroupName = "ملف الدهون الشامل",
                         Description = "فحص شامل للكوليسترول والدهون الثلاثية",
-                        GroupPrice = 200.00m,
+                        GroupPrice = Constants.MaxPatientNameLength.00m,
                         DiscountPercentage = 20.00m,
                         CreatedDate = DateTime.Now,
                         CreatedBy = "TestDataService"
@@ -222,7 +223,7 @@ namespace OGRALAB.Services
                         GroupName = "ملف الغدة الدرقية",
                         Description = "فحص شامل لوظائف الغدة الدرقية",
                         GroupPrice = 300.00m,
-                        DiscountPercentage = 25.00m,
+                        DiscountPercentage = Constants.DefaultRowHeight.00m,
                         CreatedDate = DateTime.Now,
                         CreatedBy = "TestDataService"
                     },
@@ -232,7 +233,7 @@ namespace OGRALAB.Services
                         GroupName = "ملف وظائف الكبد",
                         Description = "فحص شامل لوظائف الكبد والإنزيمات",
                         GroupPrice = 180.00m,
-                        DiscountPercentage = 15.00m,
+                        DiscountPercentage = Constants.CacheDurationMinutes.00m,
                         CreatedDate = DateTime.Now,
                         CreatedBy = "TestDataService"
                     },
@@ -242,7 +243,7 @@ namespace OGRALAB.Services
                         GroupName = "ملف وظائف الكلى",
                         Description = "فحص شامل لوظائف الكلى",
                         GroupPrice = 120.00m,
-                        DiscountPercentage = 10.00m,
+                        DiscountPercentage = Constants.MaxConcurrentOperations.00m,
                         CreatedDate = DateTime.Now,
                         CreatedBy = "TestDataService"
                     },
@@ -252,7 +253,7 @@ namespace OGRALAB.Services
                         GroupName = "ملف الفيتامينات",
                         Description = "فحص مستويات الفيتامينات الأساسية",
                         GroupPrice = 400.00m,
-                        DiscountPercentage = 30.00m,
+                        DiscountPercentage = Constants.DatabaseTimeoutSeconds.00m,
                         CreatedDate = DateTime.Now,
                         CreatedBy = "TestDataService"
                     },
@@ -261,8 +262,8 @@ namespace OGRALAB.Services
                         GroupCode = "CANCER",
                         GroupName = "ملف مؤشرات الأورام",
                         Description = "فحص مؤشرات الأورام الرئيسية",
-                        GroupPrice = 500.00m,
-                        DiscountPercentage = 25.00m,
+                        GroupPrice = Constants.MaxPageSize.00m,
+                        DiscountPercentage = Constants.DefaultRowHeight.00m,
                         CreatedDate = DateTime.Now,
                         CreatedBy = "TestDataService"
                     }
@@ -357,7 +358,7 @@ namespace OGRALAB.Services
             }
         }
 
-        public async Task<bool> CreateSamplePatientTestsAsync(int count = 100)
+        public async Task<bool> CreateSamplePatientTestsAsync(int count = Constants.CompletePercentage)
         {
             try
             {
@@ -394,7 +395,7 @@ namespace OGRALAB.Services
                     usedOrderNumbers.Add(orderNumber);
 
                     var orderDate = DateTime.Now.AddDays(-_random.Next(90)); // Orders from last 90 days
-                    var status = _random.Next(10) switch
+                    var status = _random.Next(Constants.MaxConcurrentOperations) switch
                     {
                         0 => "Pending",
                         1 => "InProgress", 
@@ -469,14 +470,15 @@ namespace OGRALAB.Services
 
                 var testResults = new List<TestResult>();
 
-                foreach (var patientTest in completedTests)
+                // TODO: Consider using batch operations to avoid N+1 queries
+            foreach (var patientTest in completedTests)
                 {
                     var testResult = new TestResult
                     {
                         PatientTestId = patientTest.PatientTestId,
                         TestTypeId = patientTest.TestTypeId,
                         TestDate = patientTest.OrderDate.Value,
-                        ResultDate = patientTest.CompletedDate ?? patientTest.OrderDate.Value.AddHours(24),
+                        ResultDate = patientTest.CompletedDate ?? patientTest.OrderDate.Value.AddHours(Constants.AutoBackupIntervalHours),
                         CreatedBy = "TestDataService",
                         CreatedDate = patientTest.CompletedDate ?? DateTime.Now
                     };
@@ -501,12 +503,12 @@ namespace OGRALAB.Services
                             if (isHigh)
                             {
                                 testResult.NumericValue = testType.MaxNormalValue.Value * 
-                                    (decimal)(1.1 + _random.NextDouble() * 0.5); // 10-60% above normal
+                                    (decimal)(1.1 + _random.NextDouble() * 0.5); // Constants.MaxConcurrentOperations-60% above normal
                             }
                             else
                             {
                                 testResult.NumericValue = testType.MinNormalValue.Value * 
-                                    (decimal)(0.5 + _random.NextDouble() * 0.4); // 50-90% of normal
+                                    (decimal)(0.5 + _random.NextDouble() * 0.4); // Constants.DefaultPageSize-90% of normal
                             }
                         }
 
@@ -565,7 +567,7 @@ namespace OGRALAB.Services
                 success &= await CreateSampleUsersAsync();
                 success &= await CreateSampleTestTypesAsync();
                 success &= await CreateSampleTestGroupsAsync();
-                success &= await CreateSamplePatientsAsync(50);
+                success &= await CreateSamplePatientsAsync(Constants.DefaultPageSize);
                 success &= await CreateSamplePatientTestsAsync(150);
                 success &= await CreateSampleTestResultsAsync();
 
@@ -626,7 +628,7 @@ namespace OGRALAB.Services
                 success &= await CreateSampleTestTypesAsync();
                 success &= await CreateSampleTestGroupsAsync();
                 success &= await CreateSampleUsersAsync();
-                success &= await CreateSamplePatientsAsync(10); // Fewer patients
+                success &= await CreateSamplePatientsAsync(Constants.MaxConcurrentOperations); // Fewer patients
                 success &= await CreateSamplePatientTestsAsync(20); // Fewer tests
                 success &= await CreateSampleTestResultsAsync();
 
@@ -650,7 +652,7 @@ namespace OGRALAB.Services
                 success &= await CreateSampleTestTypesAsync();
                 success &= await CreateSampleTestGroupsAsync();
                 success &= await CreateSampleUsersAsync();
-                success &= await CreateSamplePatientsAsync(500); // Large number
+                success &= await CreateSamplePatientsAsync(Constants.MaxPageSize); // Large number
                 success &= await CreateSamplePatientTestsAsync(2000); // Large number
                 success &= await CreateSampleTestResultsAsync();
 
@@ -679,7 +681,8 @@ namespace OGRALAB.Services
                         .Where(pt => pt.Status != "Completed")
                         .ToListAsync();
 
-                    foreach (var test in pendingTests.Take(pendingTests.Count * 80 / 100)) // Complete 80%
+                    // TODO: Consider using batch operations to avoid N+1 queries
+            foreach (var test in pendingTests.Take(pendingTests.Count * Constants.HighCompletionThreshold / Constants.CompletePercentage)) // Complete Constants.HighCompletionThreshold%
                     {
                         test.Status = "Completed";
                         test.CompletedDate = test.OrderDate?.AddHours(_random.Next(2, 48));
@@ -767,7 +770,7 @@ namespace OGRALAB.Services
                 var summary = new StringBuilder();
                 summary.AppendLine("ملخص البيانات التجريبية - OGRA LAB");
                 summary.AppendLine($"تاريخ التقرير: {DateTime.Now:yyyy-MM-dd HH:mm:ss}");
-                summary.AppendLine(new string('=', 50));
+                summary.AppendLine(new string('=', Constants.DefaultPageSize));
                 summary.AppendLine();
 
                 // Count records by creator

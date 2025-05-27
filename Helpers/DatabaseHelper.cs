@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using OGRALAB.Data;
 using System;
-using System.IO;
 using System.Threading.Tasks;
 
 namespace OGRALAB.Helpers
@@ -16,7 +15,6 @@ namespace OGRALAB.Helpers
                     .UseSqlite(connectionString)
                     .Options;
 
-                using var context = new OgraLabDbContext(options);
                 await context.Database.CanConnectAsync();
                 return true;
             }
@@ -34,7 +32,6 @@ namespace OGRALAB.Helpers
                     .UseSqlite(connectionString)
                     .Options;
 
-                using var context = new OgraLabDbContext(options);
                 await context.Database.EnsureCreatedAsync();
                 return true;
             }

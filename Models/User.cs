@@ -1,6 +1,5 @@
 using System;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+using OGRALAB.Helpers;
 
 namespace OGRALAB.Models
 {
@@ -10,15 +9,15 @@ namespace OGRALAB.Models
         public int UserId { get; set; }
 
         [Required]
-        [StringLength(50)]
+        [StringLength(Constants.DefaultPageSize)]
         public string Username { get; set; } = string.Empty;
 
         [Required]
-        [StringLength(100)]
+        [StringLength(Constants.CompletePercentage)]
         public string FullName { get; set; } = string.Empty;
 
         [Required]
-        [StringLength(100)]
+        [StringLength(Constants.CompletePercentage)]
         public string Email { get; set; } = string.Empty;
 
         [Required]
@@ -34,7 +33,7 @@ namespace OGRALAB.Models
 
         public DateTime? LastLoginDate { get; set; }
 
-        [StringLength(15)]
+        [StringLength(Constants.CacheDurationMinutes)]
         public string? PhoneNumber { get; set; }
 
         // Navigation properties

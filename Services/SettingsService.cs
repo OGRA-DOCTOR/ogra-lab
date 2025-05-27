@@ -1,5 +1,5 @@
 using System;
-using System.IO;
+using OGRALAB.Helpers;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Text.Json;
@@ -218,12 +218,12 @@ namespace OGRALAB.Services
             if (systemSettings == null) return false;
             
             // Validate numeric ranges
-            if (systemSettings.FontSize < 8 || systemSettings.FontSize > 32) return false;
+            if (systemSettings.FontSize < Constants.MinPasswordLength || systemSettings.FontSize > 32) return false;
             if (systemSettings.SessionTimeoutMinutes < 5 || systemSettings.SessionTimeoutMinutes > 480) return false;
             if (systemSettings.AutoBackupIntervalHours < 1 || systemSettings.AutoBackupIntervalHours > 168) return false;
-            if (systemSettings.MaxBackupFiles < 1 || systemSettings.MaxBackupFiles > 100) return false;
-            if (systemSettings.MinPasswordLength < 4 || systemSettings.MinPasswordLength > 50) return false;
-            if (systemSettings.MaxLoginAttempts < 1 || systemSettings.MaxLoginAttempts > 10) return false;
+            if (systemSettings.MaxBackupFiles < 1 || systemSettings.MaxBackupFiles > Constants.CompletePercentage) return false;
+            if (systemSettings.MinPasswordLength < 4 || systemSettings.MinPasswordLength > Constants.DefaultPageSize) return false;
+            if (systemSettings.MaxLoginAttempts < 1 || systemSettings.MaxLoginAttempts > Constants.MaxConcurrentOperations) return false;
 
             // Validate backup path if provided
             if (!string.IsNullOrWhiteSpace(systemSettings.BackupPath))

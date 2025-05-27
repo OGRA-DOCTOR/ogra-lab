@@ -1,5 +1,5 @@
 using System;
-using System.ComponentModel.DataAnnotations;
+using OGRALAB.Helpers;
 
 namespace OGRALAB.Models
 {
@@ -12,7 +12,7 @@ namespace OGRALAB.Models
         public int UserId { get; set; }
 
         [Required]
-        [StringLength(50)]
+        [StringLength(Constants.DefaultPageSize)]
         public string Username { get; set; } = string.Empty;
 
         [Required]
@@ -24,28 +24,28 @@ namespace OGRALAB.Models
         [StringLength(45)]
         public string? IpAddress { get; set; } // عنوان IP
 
-        [StringLength(500)]
+        [StringLength(Constants.MaxPageSize)]
         public string? UserAgent { get; set; } // معلومات المتصفح/التطبيق
 
-        [StringLength(100)]
+        [StringLength(Constants.CompletePercentage)]
         public string? DeviceName { get; set; } // اسم الجهاز
 
-        [StringLength(200)]
+        [StringLength(Constants.MaxPatientNameLength)]
         public string? Location { get; set; } // الموقع الجغرافي (اختياري)
 
         public bool IsSuccessful { get; set; } = true;
 
-        [StringLength(500)]
+        [StringLength(Constants.MaxPageSize)]
         public string? FailureReason { get; set; } // سبب فشل تسجيل الدخول
 
         public DateTime? LogoutTime { get; set; } // وقت تسجيل الخروج
 
         public TimeSpan? SessionDuration { get; set; } // مدة الجلسة
 
-        [StringLength(100)]
+        [StringLength(Constants.CompletePercentage)]
         public string? SessionId { get; set; } // معرف الجلسة
 
-        [StringLength(1000)]
+        [StringLength(Constants.MaxRecordsPerQuery)]
         public string? Notes { get; set; } // ملاحظات إضافية
 
         // Navigation properties

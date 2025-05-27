@@ -1,12 +1,9 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using OGRALAB.Data;
 using OGRALAB.Services;
 using OGRALAB.Views;
 using OGRALAB.ViewModels;
 using System;
-using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -30,7 +27,6 @@ namespace OGRALAB
                 _host = hostBuilder.Build();
 
                 // Initialize database
-                using (var scope = _host.Services.CreateScope())
                 {
                     var context = scope.ServiceProvider.GetRequiredService<OgraLabDbContext>();
                     context.Database.EnsureCreated();

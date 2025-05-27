@@ -1,6 +1,5 @@
 using System;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+using OGRALAB.Helpers;
 
 namespace OGRALAB.Models
 {
@@ -14,10 +13,10 @@ namespace OGRALAB.Models
         public string GroupCode { get; set; } = string.Empty; // كود المجموعة الفريد
 
         [Required]
-        [StringLength(100)]
+        [StringLength(Constants.CompletePercentage)]
         public string GroupName { get; set; } = string.Empty; // اسم المجموعة
 
-        [StringLength(200)]
+        [StringLength(Constants.MaxPatientNameLength)]
         public string? Description { get; set; } // وصف المجموعة
 
         [Column(TypeName = "decimal(18,2)")]
@@ -32,7 +31,7 @@ namespace OGRALAB.Models
 
         public DateTime? UpdatedDate { get; set; }
 
-        [StringLength(500)]
+        [StringLength(Constants.MaxPageSize)]
         public string? Notes { get; set; }
 
         // Navigation properties

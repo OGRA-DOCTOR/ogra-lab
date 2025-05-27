@@ -1,14 +1,13 @@
 using System;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using OGRALAB.Models;
 using OGRALAB.Services;
 using OGRALAB.Helpers;
+using OGRALAB.Settings;
 
 namespace OGRALAB.ViewModels
 {
@@ -415,9 +414,9 @@ namespace OGRALAB.ViewModels
         {
             if (SelectedUser == null) return;
 
-            var newPassword = "0000"; // Default password
+            var newPassword = SecuritySettings.DefaultPassword;
             var result = MessageBox.Show(
-                $"هل تريد إعادة تعيين كلمة مرور المستخدم '{SelectedUser.FullName}' إلى '0000'؟",
+                $"هل تريد إعادة تعيين كلمة مرور المستخدم '{SelectedUser.FullName}' إلى كلمة المرور الافتراضية؟",
                 "إعادة تعيين كلمة المرور",
                 MessageBoxButton.YesNo,
                 MessageBoxImage.Question);
@@ -465,7 +464,7 @@ namespace OGRALAB.ViewModels
 
             if (!ValidationHelper.IsValidUsername(Username))
             {
-                ErrorMessage = "اسم المستخدم غير صحيح. يجب أن يكون 3-50 حرف، أحرف وأرقام و _ فقط";
+                ErrorMessage = "اسم المستخدم غير صحيح. يجب أن يكون 3-Constants.DefaultPageSize حرف، أحرف وأرقام و _ فقط";
                 return false;
             }
 

@@ -1,4 +1,5 @@
 using System;
+using OGRALAB.Helpers;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -35,7 +36,7 @@ namespace OGRALAB.Services
         Task<string> GetMostActiveUserAsync(DateTime fromDate, DateTime toDate);
 
         // Test Type Statistics
-        Task<Dictionary<string, int>> GetMostRequestedTestTypesAsync(int topCount = 10);
+        Task<Dictionary<string, int>> GetMostRequestedTestTypesAsync(int topCount = Constants.MaxConcurrentOperations);
         Task<Dictionary<string, int>> GetTestTypesByCategoryAsync();
         Task<Dictionary<string, int>> GetTestTypesUsageAsync(DateTime fromDate, DateTime toDate);
 

@@ -1,5 +1,5 @@
 using System;
-using System.ComponentModel.DataAnnotations;
+using OGRALAB.Helpers;
 
 namespace OGRALAB.Models
 {
@@ -8,10 +8,10 @@ namespace OGRALAB.Models
         [Key]
         public int SystemSettingsId { get; set; }
 
-        [MaxLength(10)]
+        [MaxLength(Constants.MaxConcurrentOperations)]
         public string Language { get; set; } = "ar-SA";
 
-        [MaxLength(50)]
+        [MaxLength(Constants.DefaultPageSize)]
         public string FontFamily { get; set; } = "Cairo";
 
         public int FontSize { get; set; } = 14;
@@ -23,11 +23,11 @@ namespace OGRALAB.Models
 
         public bool AutoBackupEnabled { get; set; } = true;
 
-        public int AutoBackupIntervalHours { get; set; } = 24;
+        public int AutoBackupIntervalHours { get; set; } = Constants.AutoBackupIntervalHours;
 
-        public int MaxBackupFiles { get; set; } = 30;
+        public int MaxBackupFiles { get; set; } = Constants.DatabaseTimeoutSeconds;
 
-        [MaxLength(500)]
+        [MaxLength(Constants.MaxPageSize)]
         public string BackupPath { get; set; } = "";
 
         public bool EnableAuditLog { get; set; } = true;
@@ -36,11 +36,11 @@ namespace OGRALAB.Models
 
         public bool EnablePasswordComplexity { get; set; } = true;
 
-        public int MinPasswordLength { get; set; } = 8;
+        public int MinPasswordLength { get; set; } = Constants.MinPasswordLength;
 
         public int MaxLoginAttempts { get; set; } = 3;
 
-        public int LoginLockoutMinutes { get; set; } = 15;
+        public int LoginLockoutMinutes { get; set; } = Constants.CacheDurationMinutes;
 
         public bool EnableDataValidation { get; set; } = true;
 
@@ -50,7 +50,7 @@ namespace OGRALAB.Models
 
         public int AutoSaveIntervalMinutes { get; set; } = 5;
 
-        [MaxLength(100)]
+        [MaxLength(Constants.CompletePercentage)]
         public string DefaultPrinter { get; set; } = "";
 
         public bool PrintHeaderFooter { get; set; } = true;
@@ -63,20 +63,20 @@ namespace OGRALAB.Models
 
         public int ReportMarginRight { get; set; } = 20;
 
-        [MaxLength(50)]
+        [MaxLength(Constants.DefaultPageSize)]
         public string DateFormat { get; set; } = "dd/MM/yyyy";
 
-        [MaxLength(50)]
+        [MaxLength(Constants.DefaultPageSize)]
         public string TimeFormat { get; set; } = "HH:mm";
 
-        [MaxLength(50)]
+        [MaxLength(Constants.DefaultPageSize)]
         public string NumberFormat { get; set; } = "0.00";
 
         public DateTime CreatedDate { get; set; } = DateTime.Now;
 
         public DateTime? ModifiedDate { get; set; }
 
-        [MaxLength(50)]
+        [MaxLength(Constants.DefaultPageSize)]
         public string? ModifiedBy { get; set; }
     }
 }

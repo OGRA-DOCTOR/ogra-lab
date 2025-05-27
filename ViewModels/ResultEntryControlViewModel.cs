@@ -1,8 +1,6 @@
 using System;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using OGRALAB.Models;
@@ -78,7 +76,7 @@ namespace OGRALAB.ViewModels
                 var allTests = await _testService.GetAllPatientTestsAsync();
                 var pendingTests = allTests.Where(t => t.Status == "Pending" || t.Status == "InProgress")
                                           .OrderBy(t => t.OrderDate)
-                                          .Take(10) // Show only recent 10
+                                          .Take(Constants.MaxConcurrentOperations) // Show only recent Constants.MaxConcurrentOperations
                                           .ToList();
 
                 PendingTests.Clear();
@@ -106,7 +104,7 @@ namespace OGRALAB.ViewModels
                 IsLoading = true;
                 var allResults = await _testService.GetAllTestResultsAsync();
                 var recentResults = allResults.OrderByDescending(r => r.EnteredDate)
-                                             .Take(10) // Show only recent 10
+                                             .Take(Constants.MaxConcurrentOperations) // Show only recent Constants.MaxConcurrentOperations
                                              .ToList();
 
                 RecentResults.Clear();

@@ -1,6 +1,6 @@
 using System;
+using OGRALAB.Helpers;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -9,7 +9,7 @@ namespace OGRALAB.Helpers
     public static class PasswordHelper
     {
         private const int MinPasswordLength = 6;
-        private const int MaxPasswordLength = 100;
+        private const int MaxPasswordLength = Constants.CompletePercentage;
 
         public static string HashPassword(string password)
         {
@@ -21,11 +21,10 @@ namespace OGRALAB.Helpers
             return BCrypt.Net.BCrypt.Verify(password, hash);
         }
 
-        public static string GenerateRandomPassword(int length = 12)
+        public static string GenerateRandomPassword(int length = Constants.PasswordHashRounds)
         {
             const string validChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*";
             
-            using var rng = RandomNumberGenerator.Create();
             var bytes = new byte[length];
             rng.GetBytes(bytes);
             
@@ -51,12 +50,12 @@ namespace OGRALAB.Helpers
             {
                 feedback.AppendLine($"كلمة المرور يجب أن تكون على الأقل {MinPasswordLength} أحرف");
             }
-            else if (password.Length >= MinPasswordLength && password.Length < 8)
+            else if (password.Length >= MinPasswordLength && password.Length < Constants.MinPasswordLength)
             {
                 score += 1;
                 feedback.AppendLine("طول كلمة المرور مقبول");
             }
-            else if (password.Length >= 8 && password.Length < 12)
+            else if (password.Length >= Constants.MinPasswordLength && password.Length < Constants.PasswordHashRounds)
             {
                 score += 2;
                 feedback.AppendLine("طول كلمة المرور جيد");
@@ -137,7 +136,7 @@ namespace OGRALAB.Helpers
             return new PasswordStrength
             {
                 Score = score,
-                MaxScore = 8,
+                MaxScore = Constants.MinPasswordLength,
                 Description = description,
                 Feedback = feedback.ToString().Trim()
             };
@@ -168,7 +167,7 @@ namespace OGRALAB.Helpers
                 3 or 4 => "ضعيف",
                 5 or 6 => "متوسط",
                 7 => "قوي",
-                8 => "قوي جداً",
+                Constants.MinPasswordLength => "قوي جداً",
                 _ => "غير محدد"
             };
         }
@@ -189,9 +188,9 @@ namespace OGRALAB.Helpers
     public class PasswordStrength
     {
         public int Score { get; set; }
-        public int MaxScore { get; set; } = 8;
+        public int MaxScore { get; set; } = Constants.MinPasswordLength;
         public string Description { get; set; } = string.Empty;
         public string Feedback { get; set; } = string.Empty;
-        public double Percentage => MaxScore > 0 ? (double)Score / MaxScore * 100 : 0;
+        public double Percentage => MaxScore > 0 ? (double)Score / MaxScore * Constants.CompletePercentage : 0;
     }
 }

@@ -1,6 +1,5 @@
 using System;
 using System.Windows;
-using Microsoft.Extensions.DependencyInjection;
 using OGRALAB.ViewModels;
 
 namespace OGRALAB.Views

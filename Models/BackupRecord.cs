@@ -1,5 +1,5 @@
 using System;
-using System.ComponentModel.DataAnnotations;
+using OGRALAB.Helpers;
 
 namespace OGRALAB.Models
 {
@@ -9,11 +9,11 @@ namespace OGRALAB.Models
         public int BackupId { get; set; }
 
         [Required]
-        [MaxLength(255)]
+        [MaxLength(Constants.MaxTestNameLength)]
         public string FileName { get; set; } = string.Empty;
 
         [Required]
-        [MaxLength(500)]
+        [MaxLength(Constants.MaxPageSize)]
         public string FilePath { get; set; } = string.Empty;
 
         public long FileSizeBytes { get; set; }
@@ -23,29 +23,29 @@ namespace OGRALAB.Models
         [MaxLength(20)]
         public string BackupType { get; set; } = "Manual"; // Manual, Automatic, Scheduled
 
-        [MaxLength(50)]
+        [MaxLength(Constants.DefaultPageSize)]
         public string CreatedBy { get; set; } = string.Empty;
 
-        [MaxLength(500)]
+        [MaxLength(Constants.MaxPageSize)]
         public string Description { get; set; } = string.Empty;
 
         public bool IsVerified { get; set; } = false;
 
         public DateTime? VerifiedDate { get; set; }
 
-        [MaxLength(50)]
+        [MaxLength(Constants.DefaultPageSize)]
         public string? VerifiedBy { get; set; }
 
         public bool IsCorrupted { get; set; } = false;
 
-        [MaxLength(1000)]
+        [MaxLength(Constants.MaxRecordsPerQuery)]
         public string? ErrorMessage { get; set; }
 
         public int DatabaseVersion { get; set; } = 1;
 
         public int RecordCount { get; set; } = 0;
 
-        [MaxLength(100)]
+        [MaxLength(Constants.CompletePercentage)]
         public string CheckSum { get; set; } = string.Empty;
 
         // Computed Properties

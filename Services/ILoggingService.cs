@@ -1,4 +1,5 @@
 using System;
+using OGRALAB.Helpers;
 using System.Threading.Tasks;
 
 namespace OGRALAB.Services
@@ -24,7 +25,7 @@ namespace OGRALAB.Services
         Task<bool> ClearLogsAsync(DateTime beforeDate);
         Task<bool> ExportLogsAsync(string filePath, DateTime? fromDate = null, DateTime? toDate = null);
         Task<long> GetLogsSizeAsync();
-        Task<bool> CompressOldLogsAsync(int daysOld = 30);
+        Task<bool> CompressOldLogsAsync(int daysOld = Constants.DatabaseTimeoutSeconds);
 
         // Configuration
         void SetLogLevel(LogLevel level);

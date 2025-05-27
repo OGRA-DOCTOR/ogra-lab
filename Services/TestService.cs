@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using OGRALAB.Data;
 using OGRALAB.Models;
+using OGRALAB.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,6 +24,23 @@ namespace OGRALAB.Services
             return await _context.TestTypes
                 .Include(t => t.TestGroup)
                 .OrderBy(t => t.TestName)
+                .Take(Constants.MaxRecordsPerQuery)
+                .ToListAsync();
+        }
+
+        /// <summary>
+        /// Get test types with pagination for better performance
+        /// </summary>
+        public async Task<IEnumerable<TestType>> GetTestTypesPagedAsync(int page = 1, int pageSize = 0)
+        {
+            if (pageSize <= 0) pageSize = Constants.DefaultPageSize;
+            if (pageSize > Constants.MaxPageSize) pageSize = Constants.MaxPageSize;
+            
+            return await _context.TestTypes
+                .Include(t => t.TestGroup)
+                .OrderBy(t => t.TestName)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
                 .ToListAsync();
         }
 
@@ -614,7 +632,8 @@ namespace OGRALAB.Services
                 testGroup.TestTypes.Clear();
 
                 // Add new test types
-                foreach (var testTypeId in testTypeIds)
+                // TODO: Consider using batch operations to avoid N+1 queries
+            foreach (var testTypeId in testTypeIds)
                 {
                     var testType = await _context.TestTypes
                         .FirstOrDefaultAsync(tt => tt.TestTypeId == testTypeId);

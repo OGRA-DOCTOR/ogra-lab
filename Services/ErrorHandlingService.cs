@@ -1,7 +1,6 @@
 using System;
 using System.Threading.Tasks;
 using System.Windows;
-using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 
 namespace OGRALAB.Services
@@ -171,7 +170,7 @@ namespace OGRALAB.Services
                 1 => "خطأ في صيغة SQL أو قاعدة البيانات",
                 14 => "قاعدة البيانات مقفلة، يرجى المحاولة لاحقاً",
                 11 => "قاعدة البيانات تالفة أو غير صالحة",
-                _ => $"خطأ في قاعدة البيانات: {exception.Message}"
+                _ => "خطأ في قاعدة البيانات. يرجى المحاولة مرة أخرى أو الاتصال بالدعم الفني"
             };
         }
 
@@ -207,7 +206,9 @@ namespace OGRALAB.Services
 
         private string GetGenericErrorMessage(Exception exception)
         {
-            return $"حدث خطأ غير متوقع: {exception.Message}";
+            // Don't expose internal exception details to users for security reasons
+            // Log the actual error for debugging but show generic message to user
+            return "حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى أو الاتصال بالدعم الفني";
         }
 
         public string GetOperationFailedMessage(string operation)
